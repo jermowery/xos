@@ -7,11 +7,14 @@ from django.contrib.contenttypes import generic
 
 # Create your models here.
 
-class Tag(PlCoreBase):
-
+class TagType(PlCoreBase):
+    name = models.SlugField(help_text="The name of this tag", max_length=128)
     project = models.ForeignKey(Project, related_name='tags', help_text="The Project this Tag is associated with")
 
-    name = models.SlugField(help_text="The name of this tag", max_length=128)
+    def __unicode__(self):  return u'%s' % (self.name)
+
+class Tag(PlCoreBase):
+    tagType = models.ForeignKey(TagType, related_name="tags", help_text="The name of the tag")
     value = models.CharField(help_text="The value of this tag", max_length=1024)
 
     # The required fields to do a ObjectType lookup, and object_id assignment
@@ -20,5 +23,5 @@ class Tag(PlCoreBase):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return self.name
+        return self.tagType.name
 

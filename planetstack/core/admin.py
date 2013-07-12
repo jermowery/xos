@@ -396,15 +396,18 @@ class SliverForm(forms.ModelForm):
 class ProjectAdmin(admin.ModelAdmin):
     exclude = ['enacted']
 
+class TagTypeAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+
 class TagAdmin(admin.ModelAdmin):
     exclude = ['enacted']
 
 class SliverAdmin(PlanetStackBaseAdmin):
     form = SliverForm
     fieldsets = [
-        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']})
+        ('Sliver', {'fields': ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']})
     ]
-    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    list_display = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'key', 'node', 'deploymentNetwork']
     inlines = [TagInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -708,6 +711,7 @@ admin.site.register(Slice, SliceAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
 admin.site.register(Reservation, ReservationAdmin)
+admin.site.register(TagType, TagTypeAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)
