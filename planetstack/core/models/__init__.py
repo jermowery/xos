@@ -7,6 +7,7 @@ from .site import SitePrivilege
 from .image import Image
 from .user import User
 from .role import Role
+from .network import Network, Router, ParameterType, Parameter
 from .node import Node
 from .serviceclass import ServiceClass
 from .serviceresource import ServiceResource
