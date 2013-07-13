@@ -12,7 +12,7 @@ class Network(PlCoreBase):
     ports = models.CharField(max_length=1024)
     labels = models.CharField(max_length=1024)
     slice = models.ForeignKey(Slice, related_name="networks")
-    guaranteedBandwidth = models.IntegerField()
+    guaranteedBandwidth = models.IntegerField(default=0)
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="permittedNetworks")
     boundSlices = models.ManyToManyField(Slice, blank=True, related_name="boundNetworks")
 
@@ -20,6 +20,7 @@ class Network(PlCoreBase):
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)
+    owner = models.ForeignKey(Slice, related_name="routers")
     networks = models.ManyToManyField(Network, blank=True, related_name="routers")
 
     def __unicode__(self):  return u'%s' % (self.name)
@@ -39,6 +40,6 @@ class NetworkParameter(PlCoreBase):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return self.tagType.name
+        return self.networkParameterType.name
 
 
