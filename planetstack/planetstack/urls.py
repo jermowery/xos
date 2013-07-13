@@ -9,7 +9,7 @@ from core.views.users import UserList, UserDetail
 from core.views.slices import SliceList, SliceDetail
 from core.views.slice_memberships import SliceMembershipList, SliceMembershipDetail
 from core.views.slivers import SliverList, SliverDetail
-from core.views.deployment_networks import DeploymentList, DeploymentDetail
+#from core.views.deployment_networks import DeploymentList, DeploymentDetail
 from core.views.images import ImageList, ImageDetail
 from core.views.nodes import NodeList, NodeDetail
 from core.models import *
@@ -56,8 +56,8 @@ urlpatterns = patterns('',
     url(r'^plstackapi/nodes/$', NodeList.as_view(), name='node-list'),
     url(r'^plstackapi/nodes/(?P<pk>[a-zA-Z0-9_\-]+)/$', NodeDetail.as_view(), name='node-detail'),
     
-    url(r'^plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
-    url(r'^plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name='deployment-detail'),
+#    url(r'^plstackapi/deployments/$', DeploymentList.as_view(), name='deployment-list'),
+#    url(r'^plstackapi/deployments/(?P<pk>[a-zA-Z0-9\-]+)/$', DeploymentDetail.as_view(), name='deployment-detail'),
 
     url(r'^plstackapi/images/$', ImageList.as_view(), name='image-list'),
     url(r'^plstackapi/images/(?P<pk>[a-zA-Z0-9_\-]+)/$', ImageDetail.as_view(), name='image-detail'),
