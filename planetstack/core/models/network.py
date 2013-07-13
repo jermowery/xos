@@ -1,8 +1,8 @@
 import os
 from django.db import models
-from core.models import PlCoreBase
-from core.models import Site
-from core.models import Deployment
+from core.models import PlCoreBase, Site, Slice
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 # Create your models here.
 
@@ -12,7 +12,7 @@ class Network(PlCoreBase):
     ports = models.CharField(max_length=1024)
     labels = models.CharField(max_length=1024)
     slice = models.ForeignKey(Slice, related_name="networks")
-    guaranteedBandwidth = models.IntField()
+    guaranteedBandwidth = models.IntegerField()
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="permittedNetworks")
     boundSlices = models.ManyToManyField(Slice, blank=True, related_name="boundNetworks")
 
@@ -22,15 +22,15 @@ class Router(PlCoreBase):
     name = models.CharField(max_length=32)
     networks = models.ManyToManyField(Network, blank=True, related_name="routers")
 
-    def __unicode__(self):  return u'%s' % (self.name)o
+    def __unicode__(self):  return u'%s' % (self.name)
 
-class ParameterType(PlCoreBase):
+class NetworkParameterType(PlCoreBase):
     name = models.SlugField(help_text="The name of this tag", max_length=128)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-class Parameter(PlCoreBase):
-    parameterType = models.ForeignKey(ParameterType, related_name="parameters", help_text="The name of the parameter")
+class NetworkParameter(PlCoreBase):
+    networkParameterType = models.ForeignKey(NetworkParameterType, related_name="parameters", help_text="The name of the parameter")
     value = models.CharField(help_text="The value of this parameter", max_length=1024)
 
     # The required fields to do a ObjectType lookup, and object_id assignment

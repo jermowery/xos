@@ -682,6 +682,29 @@ class ReservationAdmin(admin.ModelAdmin):
         else:
             return []
 
+class NetworkParameterTypeAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", )
+
+class RouterAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", )
+
+class RouterInline(admin.TabularInline):
+    exclude = ['enacted']
+    model = Router
+    extra = 0
+
+class NetworkParameterInline(generic.GenericTabularInline):
+    exclude = ['enacted']
+    model = NetworkParameter
+    extra = 1
+
+class NetworkAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", "subnet", "ports", "labels")
+    inlines = [NetworkParameterInline]
+
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
     auth = {'username': request.POST['username'],
@@ -712,6 +735,11 @@ admin.site.register(Project, ProjectAdmin)
 admin.site.register(ServiceClass, ServiceClassAdmin)
 admin.site.register(Reservation, ReservationAdmin)
 admin.site.register(TagType, TagTypeAdmin)
+
+admin.site.register(Network, NetworkAdmin)
+admin.site.register(Router, RouterAdmin)
+admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
+#admin.site.register(Parameter, ParameterAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)
