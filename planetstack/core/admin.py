@@ -761,11 +761,15 @@ class NetworkBoundSliversInline(admin.TabularInline):
 class NetworkAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("name", "subnet", "ports", "labels")
-    inlines = [NetworkParameterInline, NetworkBoundSliversInline , RouterInline]
+    inlines = [NetworkParameterInline, NetworkBoundSliversInline, RouterInline]
 
 class NetworkBoundSliverAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("network", "sliver", "ip")
+
+class NetworkTemplateAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("name", "guaranteedBandwidth", "visibility")
 
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
@@ -802,6 +806,7 @@ admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
 admin.site.register(NetworkBoundSliver, NetworkBoundSliverAdmin)
+admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)

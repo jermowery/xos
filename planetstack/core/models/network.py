@@ -6,15 +6,23 @@ from django.contrib.contenttypes import generic
 
 # Create your models here.
 
-class Network(PlCoreBase):
+class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
 
     name = models.CharField(max_length=32)
+    guaranteedBandwidth = models.IntegerField(default=0)
+    visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
+
+    def __unicode__(self):  return u'%s' % (self.name)
+
+class Network(PlCoreBase):
+    name = models.CharField(max_length=32)
+    template = models.ForeignKey(NetworkTemplate)
     subnet = models.CharField(max_length=32)
     ports = models.CharField(max_length=1024)
     labels = models.CharField(max_length=1024)
     slice = models.ForeignKey(Slice, related_name="networks")
-    visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
+
     guaranteedBandwidth = models.IntegerField(default=0)
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="permittedNetworks")
     boundSlivers = models.ManyToManyField(Sliver, blank=True, related_name="boundNetworks", through="NetworkBoundSliver")
