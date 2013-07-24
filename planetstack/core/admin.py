@@ -12,6 +12,7 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
+from django.forms.models import BaseInlineFormSet
 
 import django_evolution 
 
@@ -39,13 +40,50 @@ class TagInline(generic.GenericTabularInline):
     exclude = ['enacted']
     extra = 1
 
+class SliverInlineDynamicForm(forms.ModelForm):
+    class Meta:
+        model = Sliver
+
+    def __init__(self, *args, **kwargs):
+        if 'parent_object' in kwargs:
+            self.parent_object = kwargs.pop('parent_object')
+        else:
+            self.parent_object = None
+        super(SliverInlineDynamicForm, self).__init__(*args, **kwargs)
+#        self.fields["foo"] = forms.ChoiceField(label="foo", widget=PlainTextWidget())
+        if self.parent_object:
+            network_names = []
+            for sliver in self.parent_object.slivers.all():
+                for nbs in sliver.networkboundsliver_set.all():
+                    if nbs.ip is not None:
+                        if not (nbs.network.name in network_names):
+                            network_names.append(nbs.network.name)
+            for network_name in network_names:
+                self.fields[network_name] = forms.CharField(label=network_name)
+
+
+class SliverInlineFormSet(BaseInlineFormSet):
+    def _construct_form(self, i, **kwargs):
+        kwargs['parent_object'] = self.instance
+        print self.form
+        return super(SliverInlineFormSet, self)._construct_form(i, **kwargs)
+
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    form = SliverInlineDynamicForm
+    formset = SliverInlineFormSet
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', "networkIps", "foo"]
+    extra = 0
+    readonly_fields = ['ip', 'instance_name', "networkIps", "foo"]
+
+    foo = "bar"
+
+class SliverInline_Stacked(admin.StackedInline): #PlStackTabularInline):
+    model = Sliver
+    fields = [('ip', 'instance_name', 'slice', 'numberCores', 'image', 'node'), ("ip", "networkIps")]
     extra = 0
     #readonly_fields = ['ip', 'instance_name', 'image']
-    readonly_fields = ['ip', 'instance_name']
-    
+    readonly_fields = ['ip', 'instance_name', "networkIps"]
 
 class SiteInline(PlStackTabularInline):
     model = Site
@@ -268,15 +306,26 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
             qs = qs.filter(site__in=sites)
         return qs
 
+class NetworkBoundSliverInline(PlStackTabularInline):
+    model = NetworkBoundSliver
+    extra = 0
+    fields = ('network', 'ip')
+
+    def get_queryset(self, request):
+        return NetworkBoundSliver.objects.all()
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        return super(NetworkBoundSliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline]
+    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline] #, NetworkBoundSliverInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
             if not request.user.is_admin:
-                # only show sites where user is a pi or admin 
+                # only show sites where user is a pi or admin
                 roles = Role.objects.filter(role_type__in=['admin', 'pi'])
                 site_privileges = SitePrivilege.objects.filter(user=request.user).filter(role__in=roles)
                 login_bases = [site_privilege.site.login_base for site_privilege in site_privileges]
@@ -392,6 +441,10 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
         }
+
+#    def __init__(self, *args, **kwargs):
+#        self.parent_object = kwargs.pop('parent_object')
+#        super(SliverInlineDynamicForm, self).__init__(*args, **kwargs)
 
 class ProjectAdmin(admin.ModelAdmin):
     exclude = ['enacted']
@@ -691,8 +744,8 @@ class RouterAdmin(admin.ModelAdmin):
     list_display = ("name", )
 
 class RouterInline(admin.TabularInline):
-    exclude = ['enacted']
-    model = Router
+#    exclude = ['enacted']
+    model = Router.networks.through #Network.routers.through
     extra = 0
 
 class NetworkParameterInline(generic.GenericTabularInline):
@@ -700,10 +753,19 @@ class NetworkParameterInline(generic.GenericTabularInline):
     model = NetworkParameter
     extra = 1
 
+class NetworkBoundSliversInline(admin.TabularInline):
+    exclude = ['enacted']
+    model = NetworkBoundSliver # Network.boundSlivers.through
+    extra = 0
+
 class NetworkAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("name", "subnet", "ports", "labels")
-    inlines = [NetworkParameterInline]
+    inlines = [NetworkParameterInline, NetworkBoundSliversInline , RouterInline]
+
+class NetworkBoundSliverAdmin(admin.ModelAdmin):
+    exclude = ['enacted']
+    list_display = ("network", "sliver", "ip")
 
 # register a signal that caches the user's credentials when they log in
 def cache_credentials(sender, user, request, **kwds):
@@ -739,7 +801,7 @@ admin.site.register(TagType, TagTypeAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
-#admin.site.register(Parameter, ParameterAdmin)
+admin.site.register(NetworkBoundSliver, NetworkBoundSliverAdmin)
 
 if showAll:
     admin.site.register(Tag, TagAdmin)
