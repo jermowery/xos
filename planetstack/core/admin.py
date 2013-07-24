@@ -40,39 +40,6 @@ class TagInline(generic.GenericTabularInline):
     exclude = ['enacted']
     extra = 1
 
-class SliverInlineDynamicForm(forms.ModelForm):
-    class Meta:
-        model = Sliver
-
-    def __init__(self, *args, **kwargs):
-        if 'parent_object' in kwargs:
-            self.parent_object = kwargs.pop('parent_object')
-        else:
-            self.parent_object = None
-        super(SliverInlineDynamicForm, self).__init__(*args, **kwargs)
-        self.dynamic_fields = []
-        if True and self.parent_object:
-            network_names = []
-            for sliver in self.parent_object.slivers.all():
-                for nbs in sliver.networkboundsliver_set.all():
-                    if nbs.ip is not None:
-                        if not (nbs.network.name in network_names):
-                            network_names.append(nbs.network.name)
-            for network_name in network_names:
-                self.base_fields[network_name] = forms.CharField(label=network_name)
-                self.dynamic_fields.append(network_name)
-
-
-class ParentInlineFormSet(BaseInlineFormSet):
-    """ Passes parent_object as an argument to the forms that are created
-        by this formset. The Form should do
-           kwargs.pop('parent_object')
-        in its __init__() method
-    """
-    def _construct_form(self, i, **kwargs):
-        kwargs['parent_object'] = self.instance
-        return super(ParentInlineFormSet, self)._construct_form(i, **kwargs)
-
 class NetworkLookerUpper:
     """ This is a callable that looks up a network name in a sliver """
 
@@ -91,11 +58,8 @@ class NetworkLookerUpper:
     def __str__(self):
         return self.network_name
 
-from django.db import models
 class SliverInline(PlStackTabularInline):
     model = Sliver
-#    form = SliverInlineDynamicForm
-#    formset = ParentInlineFormSet
     fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node']
     extra = 0
     readonly_fields = ['ip', 'instance_name']
@@ -125,13 +89,6 @@ class SliverInline(PlStackTabularInline):
                 fields.append(fieldName)
 
         return [(None, {'fields': fields})]
-
-class SliverInline_Stacked(admin.StackedInline): #PlStackTabularInline):
-    model = Sliver
-    fields = [('ip', 'instance_name', 'slice', 'numberCores', 'image', 'node'), ("ip", "networkIps")]
-    extra = 0
-    #readonly_fields = ['ip', 'instance_name', 'image']
-    readonly_fields = ['ip', 'instance_name', "networkIps"]
 
 class SiteInline(PlStackTabularInline):
     model = Site
