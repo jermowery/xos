@@ -41,7 +41,9 @@ class TagInline(generic.GenericTabularInline):
     extra = 1
 
 class NetworkLookerUpper:
-    """ This is a callable that looks up a network name in a sliver """
+    """ This is a callable that looks up a network name in a sliver and returns
+        the ip address for that network.
+    """
 
     def __init__(self, name):
         self.short_description = name
@@ -71,6 +73,9 @@ class SliverInline(PlStackTabularInline):
 
     def get_readonly_fields(self, request, obj=None):
         readonly_fields = super(SliverInline, self).get_readonly_fields(request, obj)
+
+        # Lookup the networks that are bound to the slivers, and add those
+        # network names to the list of readonly fields.
 
         for sliver in obj.slivers.all():
             for nbs in sliver.networkboundsliver_set.all():
