@@ -50,8 +50,8 @@ class SliverInlineDynamicForm(forms.ModelForm):
         else:
             self.parent_object = None
         super(SliverInlineDynamicForm, self).__init__(*args, **kwargs)
-#        self.fields["foo"] = forms.ChoiceField(label="foo", widget=PlainTextWidget())
-        if self.parent_object:
+        self.dynamic_fields = []
+        if True and self.parent_object:
             network_names = []
             for sliver in self.parent_object.slivers.all():
                 for nbs in sliver.networkboundsliver_set.all():
@@ -59,24 +59,72 @@ class SliverInlineDynamicForm(forms.ModelForm):
                         if not (nbs.network.name in network_names):
                             network_names.append(nbs.network.name)
             for network_name in network_names:
-                self.fields[network_name] = forms.CharField(label=network_name)
+                self.base_fields[network_name] = forms.CharField(label=network_name)
+                self.dynamic_fields.append(network_name)
 
 
-class SliverInlineFormSet(BaseInlineFormSet):
+class ParentInlineFormSet(BaseInlineFormSet):
+    """ Passes parent_object as an argument to the forms that are created
+        by this formset. The Form should do
+           kwargs.pop('parent_object')
+        in its __init__() method
+    """
     def _construct_form(self, i, **kwargs):
         kwargs['parent_object'] = self.instance
-        print self.form
-        return super(SliverInlineFormSet, self)._construct_form(i, **kwargs)
+        return super(ParentInlineFormSet, self)._construct_form(i, **kwargs)
 
+class NetworkLookerUpper:
+    """ This is a callable that looks up a network name in a sliver """
+
+    def __init__(self, name):
+        self.short_description = name
+        self.__name__ = name
+        self.network_name = name
+
+    def __call__(self, obj):
+        if obj is not None:
+            for nbs in obj.networkboundsliver_set.all():
+                if (nbs.network.name == self.network_name):
+                    return nbs.ip
+        return ""
+
+    def __str__(self):
+        return self.network_name
+
+from django.db import models
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    form = SliverInlineDynamicForm
-    formset = SliverInlineFormSet
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', "networkIps", "foo"]
+#    form = SliverInlineDynamicForm
+#    formset = ParentInlineFormSet
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node']
     extra = 0
-    readonly_fields = ['ip', 'instance_name', "networkIps", "foo"]
+    readonly_fields = ['ip', 'instance_name']
 
-    foo = "bar"
+    def _declared_fieldsets(self):
+        # Return None so django will call get_fieldsets and we can insert our
+        # dynamic fields
+        return None
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super(SliverInline, self).get_readonly_fields(request, obj)
+
+        for sliver in obj.slivers.all():
+            for nbs in sliver.networkboundsliver_set.all():
+                if nbs.ip is not None:
+                    network_name = nbs.network.name
+                    if network_name not in [str(x) for x in readonly_fields]:
+                        readonly_fields.append(NetworkLookerUpper(network_name))
+
+        return readonly_fields
+
+    def get_fieldsets(self, request, obj=None):
+        form = self.get_formset(request, obj).form
+        fields = self.fields
+        for fieldName in self.get_readonly_fields(request,obj):
+            if not fieldName in fields:
+                fields.append(fieldName)
+
+        return [(None, {'fields': fields})]
 
 class SliverInline_Stacked(admin.StackedInline): #PlStackTabularInline):
     model = Sliver
@@ -441,10 +489,6 @@ class SliverForm(forms.ModelForm):
             'ip': PlainTextWidget(),
             'instance_name': PlainTextWidget(),
         }
-
-#    def __init__(self, *args, **kwargs):
-#        self.parent_object = kwargs.pop('parent_object')
-#        super(SliverInlineDynamicForm, self).__init__(*args, **kwargs)
 
 class ProjectAdmin(admin.ModelAdmin):
     exclude = ['enacted']
