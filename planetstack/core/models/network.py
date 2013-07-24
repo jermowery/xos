@@ -1,22 +1,32 @@
 import os
 from django.db import models
-from core.models import PlCoreBase, Site, Slice
+from core.models import PlCoreBase, Site, Slice, Sliver
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 
 # Create your models here.
 
 class Network(PlCoreBase):
+    VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
+
     name = models.CharField(max_length=32)
     subnet = models.CharField(max_length=32)
     ports = models.CharField(max_length=1024)
     labels = models.CharField(max_length=1024)
     slice = models.ForeignKey(Slice, related_name="networks")
+    visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
     guaranteedBandwidth = models.IntegerField(default=0)
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="permittedNetworks")
-    boundSlices = models.ManyToManyField(Slice, blank=True, related_name="boundNetworks")
+    boundSlivers = models.ManyToManyField(Sliver, blank=True, related_name="boundNetworks", through="NetworkBoundSliver")
 
     def __unicode__(self):  return u'%s' % (self.name)
+
+class NetworkBoundSliver(PlCoreBase):
+    network = models.ForeignKey(Network)
+    sliver = models.ForeignKey(Sliver)
+    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
+
+    def __unicode__(self):  return u'foo!'
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)
