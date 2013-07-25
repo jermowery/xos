@@ -12,13 +12,15 @@ SUBNET_NODE_BITS = 12     # enough for 4096 bits per subnet
 SUBNET_SUBNET_BITS = 12   # enough for 4096 private networks
 
 def find_unused_subnet(base, subnet_bits, node_bits, existing_subnets):
-    i=0
+    # start at the first allocatable subnet
+    i=1
     while True:
-        subnet_i = (i<<node_bits) | int(socket.inet_aton(base).encode('hex'),16)
+        subnet_i = int(socket.inet_aton(base).encode('hex'),16) | (i<<node_bits)
         subnet = socket.inet_ntoa(hex(subnet_i)[2:].zfill(8).decode('hex')) + "/" + str(32-node_bits)
         if (subnet not in existing_subnets):
             return subnet
         i=i+1
+        # TODO: we could run out...
 
 class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
