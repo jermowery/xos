@@ -25,11 +25,11 @@ class Network(PlCoreBase):
 
     guaranteedBandwidth = models.IntegerField(default=0)
     permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="permittedNetworks")
-    boundSlivers = models.ManyToManyField(Sliver, blank=True, related_name="boundNetworks", through="NetworkBoundSliver")
+    boundSlivers = models.ManyToManyField(Sliver, blank=True, related_name="boundNetworks", through="NetworkSliver")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
-class NetworkBoundSliver(PlCoreBase):
+class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
     sliver = models.ForeignKey(Sliver)
     ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)

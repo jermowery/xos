@@ -52,7 +52,7 @@ class NetworkLookerUpper:
 
     def __call__(self, obj):
         if obj is not None:
-            for nbs in obj.networkboundsliver_set.all():
+            for nbs in obj.networksliver_set.all():
                 if (nbs.network.name == self.network_name):
                     return nbs.ip
         return ""
@@ -78,7 +78,7 @@ class SliverInline(PlStackTabularInline):
         # network names to the list of readonly fields.
 
         for sliver in obj.slivers.all():
-            for nbs in sliver.networkboundsliver_set.all():
+            for nbs in sliver.networksliver_set.all():
                 if nbs.ip is not None:
                     network_name = nbs.network.name
                     if network_name not in [str(x) for x in readonly_fields]:
@@ -88,6 +88,7 @@ class SliverInline(PlStackTabularInline):
 
     def get_fieldsets(self, request, obj=None):
         form = self.get_formset(request, obj).form
+        # fields = the read/write files + the read-only fields
         fields = self.fields
         for fieldName in self.get_readonly_fields(request,obj):
             if not fieldName in fields:
@@ -316,21 +317,21 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
             qs = qs.filter(site__in=sites)
         return qs
 
-class NetworkBoundSliverInline(PlStackTabularInline):
-    model = NetworkBoundSliver
+class NetworkSliverInline(PlStackTabularInline):
+    model = NetworkSliver
     extra = 0
     fields = ('network', 'ip')
 
     def get_queryset(self, request):
-        return NetworkBoundSliver.objects.all()
+        return NetworkSliver.objects.all()
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        return super(NetworkBoundSliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super(NetworkSliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline] #, NetworkBoundSliverInline]
+    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline] #, NetworkSliverInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -759,17 +760,17 @@ class NetworkParameterInline(generic.GenericTabularInline):
     model = NetworkParameter
     extra = 1
 
-class NetworkBoundSliversInline(admin.TabularInline):
+class NetworkSliversInline(admin.TabularInline):
     exclude = ['enacted']
-    model = NetworkBoundSliver # Network.boundSlivers.through
+    model = NetworkSliver # Network.boundSlivers.through
     extra = 0
 
 class NetworkAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("name", "subnet", "ports", "labels")
-    inlines = [NetworkParameterInline, NetworkBoundSliversInline, RouterInline]
+    inlines = [NetworkParameterInline, NetworkSliversInline, RouterInline]
 
-class NetworkBoundSliverAdmin(admin.ModelAdmin):
+class NetworkSliverAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("network", "sliver", "ip")
 
@@ -811,7 +812,7 @@ admin.site.register(TagType, TagTypeAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
-admin.site.register(NetworkBoundSliver, NetworkBoundSliverAdmin)
+admin.site.register(NetworkSliver, NetworkSliverAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 
 if showAll:
