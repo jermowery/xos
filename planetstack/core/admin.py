@@ -751,8 +751,8 @@ class RouterAdmin(admin.ModelAdmin):
     list_display = ("name", )
 
 class RouterInline(admin.TabularInline):
-#    exclude = ['enacted']
-    model = Router.networks.through #Network.routers.through
+    # exclude = ['enacted']
+    model = Router.networks.through
     extra = 0
 
 class NetworkParameterInline(generic.GenericTabularInline):
@@ -762,12 +762,14 @@ class NetworkParameterInline(generic.GenericTabularInline):
 
 class NetworkSliversInline(admin.TabularInline):
     exclude = ['enacted']
+    readonly_fields = ("ip", )
     model = NetworkSliver # Network.boundSlivers.through
     extra = 0
 
 class NetworkAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("name", "subnet", "ports", "labels")
+    readonly_fields = ("subnet", )
     inlines = [NetworkParameterInline, NetworkSliversInline, RouterInline]
 
 class NetworkSliverAdmin(admin.ModelAdmin):
