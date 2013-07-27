@@ -54,9 +54,9 @@ class NetworkTemplate(PlCoreBase):
 class Network(PlCoreBase):
     name = models.CharField(max_length=32)
     template = models.ForeignKey(NetworkTemplate)
-    subnet = models.CharField(max_length=32, blank=True, null=True)
-    ports = models.CharField(max_length=1024)
-    labels = models.CharField(max_length=1024)
+    subnet = models.CharField(max_length=32, blank=True)
+    ports = models.CharField(max_length=1024, blank=True, null=True)
+    labels = models.CharField(max_length=1024, blank=True, null=True)
     slice = models.ForeignKey(Slice, related_name="networks")
 
     guaranteedBandwidth = models.IntegerField(default=0)
@@ -81,7 +81,7 @@ class Network(PlCoreBase):
 class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
     sliver = models.ForeignKey(Sliver)
-    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
+    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True)
 
     def save(self, *args, **kwds):
         if not self.ip:
