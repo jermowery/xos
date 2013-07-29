@@ -755,6 +755,7 @@ class RouterInline(admin.TabularInline):
     model = Router.networks.through
     extra = 0
     verbose_name_plural = "Routers"
+    verbose_name = "Router"
 
 class NetworkParameterInline(generic.GenericTabularInline):
     exclude = ['enacted']
@@ -767,6 +768,7 @@ class NetworkSliversInline(admin.TabularInline):
     model = NetworkSliver
     extra = 0
     verbose_name_plural = "Slivers"
+    verbose_name = "Sliver"
 
 class NetworkAdmin(admin.ModelAdmin):
     exclude = ['enacted']
