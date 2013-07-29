@@ -165,10 +165,17 @@ class SliceMembershipInline(PlStackTabularInline):
                 sites = [site_privilege.site for site_privilege in site_privileges]
                 site_privileges = SitePrivilege.objects.filter(site__in=sites)
                 emails = [site_privilege.user.email for site_privilege in site_privileges]   
-                users = User.objects.filter(email__in=emails) 
+                users = User.objects.filter(email__in=emails)
                 kwargs['queryset'] = list(users)
 
         return super(SliceMembershipInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+class SliceNetworkInline(admin.TabularInline):
+    # exclude = ['enacted']
+    model = Network.slices.through
+    extra = 0
+    verbose_name = "Connected Network"
+    verbose_name_plural = "Connected Networks"
 
 class SliceTagInline(PlStackTabularInline):
     model = SliceTag
@@ -317,21 +324,10 @@ class SitePrivilegeAdmin(PlanetStackBaseAdmin):
             qs = qs.filter(site__in=sites)
         return qs
 
-class NetworkSliverInline(PlStackTabularInline):
-    model = NetworkSliver
-    extra = 0
-    fields = ('network', 'ip')
-
-    def get_queryset(self, request):
-        return NetworkSliver.objects.all()
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        return super(NetworkSliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
 class SliceAdmin(PlanetStackBaseAdmin):
     fields = ['name', 'site', 'serviceClass', 'description', 'slice_url']
     list_display = ('name', 'site','serviceClass', 'slice_url')
-    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline] #, NetworkSliverInline]
+    inlines = [SliverInline, SliceMembershipInline, TagInline, SliceTagInline, SliceNetworkInline]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
