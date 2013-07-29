@@ -174,8 +174,8 @@ class SliceNetworkInline(admin.TabularInline):
     # exclude = ['enacted']
     model = Network.slices.through
     extra = 0
-    verbose_name = "Connected Network"
-    verbose_name_plural = "Connected Networks"
+    verbose_name = "Network Connection"
+    verbose_name_plural = "Network Connections"
 
 class SliceTagInline(PlStackTabularInline):
     model = SliceTag
@@ -774,10 +774,6 @@ class NetworkAdmin(admin.ModelAdmin):
     readonly_fields = ("subnet", )
     inlines = [NetworkParameterInline, NetworkSliversInline, RouterInline]
 
-class NetworkSliverAdmin(admin.ModelAdmin):
-    exclude = ['enacted']
-    list_display = ("network", "sliver", "ip")
-
 class NetworkTemplateAdmin(admin.ModelAdmin):
     exclude = ['enacted']
     list_display = ("name", "guaranteedBandwidth", "visibility")
@@ -816,7 +812,6 @@ admin.site.register(TagType, TagTypeAdmin)
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(Router, RouterAdmin)
 admin.site.register(NetworkParameterType, NetworkParameterTypeAdmin)
-admin.site.register(NetworkSliver, NetworkSliverAdmin)
 admin.site.register(NetworkTemplate, NetworkTemplateAdmin)
 
 if showAll:
