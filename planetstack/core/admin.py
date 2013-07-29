@@ -761,6 +761,8 @@ class NetworkParameterInline(generic.GenericTabularInline):
     exclude = ['enacted']
     model = NetworkParameter
     extra = 1
+    verbose_name_plural = "Parameters"
+    verbose_name = "Parameter"
 
 class NetworkSliversInline(admin.TabularInline):
     exclude = ['enacted']
