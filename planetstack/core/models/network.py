@@ -24,11 +24,13 @@ class Network(PlCoreBase):
     subnet = models.CharField(max_length=32, blank=True)
     ports = models.CharField(max_length=1024, blank=True, null=True)
     labels = models.CharField(max_length=1024, blank=True, null=True)
-    slice = models.ForeignKey(Slice, related_name="networks")
+    owner = models.ForeignKey(Slice, related_name="ownedNetworks")
 
     guaranteedBandwidth = models.IntegerField(default=0)
-    permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="permittedNetworks")
-    slivers = models.ManyToManyField(Sliver, blank=True, related_name="boundNetworks", through="NetworkSliver")
+    permitAllSlices = models.BooleanField(default=False)
+    permittedSlices = models.ManyToManyField(Slice, blank=True, related_name="availableNetworks")
+    slices = models.ManyToManyField(Slice, blank=True, related_name="networks")
+    slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
@@ -50,22 +52,24 @@ class NetworkSliver(PlCoreBase):
                                           [x.ip for x in self.network.networksliver_set.all()])
         super(NetworkSliver, self).save(*args, **kwds)
 
-    def __unicode__(self):  return u'foo!'
+    def __unicode__(self):  return u'%s-%s' % (self.network.name, self.sliver.instance_name)
 
 class Router(PlCoreBase):
     name = models.CharField(max_length=32)
     owner = models.ForeignKey(Slice, related_name="routers")
+    permittedNetworks = models.ManyToManyField(Network, blank=True, related_name="availableRouters")
     networks = models.ManyToManyField(Network, blank=True, related_name="routers")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
 class NetworkParameterType(PlCoreBase):
-    name = models.SlugField(help_text="The name of this tag", max_length=128)
+    name = models.SlugField(help_text="The name of this parameter", max_length=128)
+    description = models.CharField(max_length=1024)
 
     def __unicode__(self):  return u'%s' % (self.name)
 
 class NetworkParameter(PlCoreBase):
-    networkParameterType = models.ForeignKey(NetworkParameterType, related_name="parameters", help_text="The name of the parameter")
+    parameter = models.ForeignKey(NetworkParameterType, related_name="parameters", help_text="The type of the parameter")
     value = models.CharField(help_text="The value of this parameter", max_length=1024)
 
     # The required fields to do a ObjectType lookup, and object_id assignment
@@ -74,6 +78,6 @@ class NetworkParameter(PlCoreBase):
     content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def __unicode__(self):
-        return self.networkParameterType.name
+        return self.parameter.name
 
 
