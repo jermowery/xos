@@ -44,7 +44,7 @@ class Network(PlCoreBase):
 class NetworkSliver(PlCoreBase):
     network = models.ForeignKey(Network)
     sliver = models.ForeignKey(Sliver)
-    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True)
+    ip = models.GenericIPAddressField(help_text="Sliver ip address", blank=True, null=True)
 
     def save(self, *args, **kwds):
         if (not self.ip) and (NO_OBSERVER):
