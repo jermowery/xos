@@ -12,7 +12,6 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.signals import user_logged_in
 from django.utils import timezone
 from django.contrib.contenttypes import generic
-from django.forms.models import BaseInlineFormSet
 
 import django_evolution 
 
