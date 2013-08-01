@@ -391,4 +391,52 @@ class OpenStackManager:
         old_image_names = set(images_dict.keys()).difference(glance_images_dict.keys())
         Image.objects.filter(name__in=old_image_names).delete()
 
+    @require_enabled
+    def save_network(self, network):
+        if not network.network_id:
+            # We don't want someone to give a network the same name as an existing
+            # slice network, so let's preface all the network names with "net-"
+            network_name = "net-" + network.name
+
+            # create network
+            os_network = self.driver.create_network(network_name)
+            network.network_id = os_network['id']
+
+            # create router
+            router = self.driver.create_router(network_name)
+            network.router_id = router['id']
+
+            # create subnet
+            next_subnet = self.get_next_subnet()
+            cidr = str(next_subnet.cidr)
+            ip_version = next_subnet.version
+            start = str(next_subnet[2])
+            end = str(next_subnet[-2])
+            subnet = self.driver.create_subnet(name=network_name,
+                                               network_id = network.network_id,
+                                               cidr_ip = cidr,
+                                               ip_version = ip_version,
+                                               start = start,
+                                               end = end)
+            network.subnet = cidr
+            network.subnet_id = subnet['id']
+            # add subnet as interface to slice's router
+            self.driver.add_router_interface(router['id'], subnet['id'])
+            # add external route
+            self.driver.add_external_route(subnet)
+
+        network.save()
+        network.enacted = datetime.now()
+        network.save(update_fields=['enacted'])
+
+    def delete_network(self, network):
+        if (network.router_id) and (network.subnet_id):
+            self.driver.delete_router_interface(network.router_id, network.subnet_id)
+        if network.subnet_id:
+            self.driver.delete_subnet(network.subnet_id)
+        if network.router_id:
+            self.driver.delete_router(network.router_id)
+        if network.network_id:
+            self.driver.delete_network(network.network_id)
+
 
