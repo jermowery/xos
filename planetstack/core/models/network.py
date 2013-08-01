@@ -33,6 +33,11 @@ class Network(PlCoreBase):
     slices = models.ManyToManyField(Slice, blank=True, related_name="networks", through="NetworkSlice")
     slivers = models.ManyToManyField(Sliver, blank=True, related_name="networks", through="NetworkSliver")
 
+    # for observer/manager
+    network_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
+    router_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum router id")
+    subnet_id = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum subnet id")
+
     def __unicode__(self):  return u'%s' % (self.name)
 
     def save(self, *args, **kwds):
