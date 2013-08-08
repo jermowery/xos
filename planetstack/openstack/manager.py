@@ -458,11 +458,11 @@ class OpenStackManager:
 
         # templates for networks we may encounter
         if name=='nat-net':
-            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat", "guaranteedbandwidth": 0}
+            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat"} #, "guaranteedbandwidth": 0}
         elif name=='sharednet1':
-            template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none", "guaranteedbandwidth": 0}
+            template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none"} # , "guaranteedbandwidth": 0}
         else:
-            template_dict = {"name": "private", "visibility": "private", "translation": "none", "guaranteedbandwidth": 0}
+            template_dict = {"name": "private", "visibility": "private", "translation": "none"} #, "guaranteedbandwidth": 0}
 
         # if we have an existing template return it
         templates = NetworkTemplate.objects.filter(name=template_dict["name"])
@@ -475,7 +475,7 @@ class OpenStackManager:
     def refresh_networks(self):
         # get a list of all networks in the model
 
-        networks = Networks.objects.all()
+        networks = Network.objects.all()
         networks_by_name = {}
         networks_by_id = {}
         for network in networks:
@@ -497,8 +497,8 @@ class OpenStackManager:
                 # Only automatically create shared networks. This is for Andy's
                 # nat-net and sharednet1.
 
-                owner_slice = Slices.objects.get(tenant_id = os_network['tenant_id'])
-                template = find_or_make_template_for_network(os_network['name'])
+                owner_slice = Slice.objects.get(tenant_id = os_network['tenant_id'])
+                template = self.find_or_make_template_for_network(os_network['name'])
 
                 # Make a best-effort attempt to figure out the subnet. If we
                 # cannot determine the subnet, then leave those fields blank.
@@ -508,19 +508,19 @@ class OpenStackManager:
                     subnet_id = os_network['subnets'][0]
                     os_subnets = self.driver.shell.quantum.list_subnets(id=subnet_id)['subnets']
                     if os_subnets:
-                        subnet = subnets[0]['cidr']
+                        subnet = os_subnets[0]['cidr']
 
                 if owner_slice:
                     print "creating model object for OS network", os_network['name']
                     #new_network = Network(name = os_network['name'],
                     #                      template = template,
                     #                      owner = owner_slice,
-                    #                      guaranteedBandwidth = 0,
+                    #                      #guaranteedBandwidth = 0,
                     #                      network_id = uuid,
                     #                      subnet_id = subnet_id)
                     #new_network.save()
 
-        for (network_name, network) in networks:
+        for (network_id, network) in networks_by_id.items():
             # If the network disappeared from OS, then reset its network_id to None
             if (network.network_id is not None) and (network.network_id not in os_networks_by_id):
                 network.network_id = None
