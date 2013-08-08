@@ -470,6 +470,7 @@ class OpenStackManager:
             return templates[0]
 
         template = NetworkTemplate(**template_dict)
+        template.save()
         return template
 
     def refresh_networks(self):
