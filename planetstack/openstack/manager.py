@@ -412,6 +412,8 @@ class OpenStackManager:
     @require_enabled
     def save_network(self, network):
         if not network.network_id:
+            network_name = network.name
+
             # create network
             os_network = self.driver.create_network(network_name)
             network.network_id = os_network['id']
@@ -513,13 +515,13 @@ class OpenStackManager:
 
                 if owner_slice:
                     print "creating model object for OS network", os_network['name']
-                    #new_network = Network(name = os_network['name'],
-                    #                      template = template,
-                    #                      owner = owner_slice,
-                    #                      #guaranteedBandwidth = 0,
-                    #                      network_id = uuid,
-                    #                      subnet_id = subnet_id)
-                    #new_network.save()
+                    new_network = Network(name = os_network['name'],
+                                          template = template,
+                                          owner = owner_slice,
+                                          #guaranteedBandwidth = 0,
+                                          network_id = uuid,
+                                          subnet_id = subnet_id)
+                    new_network.save()
 
         for (network_id, network) in networks_by_id.items():
             # If the network disappeared from OS, then reset its network_id to None
@@ -529,8 +531,8 @@ class OpenStackManager:
             # If no OS object exists, then saving the network will create one
             if (network.network_id is None):
                 print "creating OS network for", network.name
-                #self.save_network(network)
+                self.save_network(network)
             else:
-                print "network", network_name, "has its OS object"
+                print "network", network.name, "has its OS object"
 
 
