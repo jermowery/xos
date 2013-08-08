@@ -460,11 +460,11 @@ class OpenStackManager:
 
         # templates for networks we may encounter
         if name=='nat-net':
-            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat"} #, "guaranteedbandwidth": 0}
+            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat"}
         elif name=='sharednet1':
-            template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none"} # , "guaranteedbandwidth": 0}
+            template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none"}
         else:
-            template_dict = {"name": "private", "visibility": "private", "translation": "none"} #, "guaranteedbandwidth": 0}
+            template_dict = {"name": "private", "visibility": "private", "translation": "none"}
 
         # if we have an existing template return it
         templates = NetworkTemplate.objects.filter(name=template_dict["name"])
@@ -495,7 +495,7 @@ class OpenStackManager:
             os_networks_by_id[os_network['id']] = os_network
 
         for (uuid, os_network) in os_networks_by_id.items():
-            print "checking OS network", os_network['name']
+            #print "checking OS network", os_network['name']
             if (os_network['shared']) and (uuid not in networks_by_id):
                 # Only automatically create shared networks. This is for Andy's
                 # nat-net and sharednet1.
@@ -514,11 +514,10 @@ class OpenStackManager:
                         subnet = os_subnets[0]['cidr']
 
                 if owner_slice:
-                    print "creating model object for OS network", os_network['name']
+                    #print "creating model object for OS network", os_network['name']
                     new_network = Network(name = os_network['name'],
                                           template = template,
                                           owner = owner_slice,
-                                          #guaranteedBandwidth = 0,
                                           network_id = uuid,
                                           subnet_id = subnet_id)
                     new_network.save()
@@ -530,9 +529,9 @@ class OpenStackManager:
 
             # If no OS object exists, then saving the network will create one
             if (network.network_id is None):
-                print "creating OS network for", network.name
+                #print "creating OS network for", network.name
                 self.save_network(network)
             else:
-                print "network", network.name, "has its OS object"
+                pass #print "network", network.name, "has its OS object"
 
 
