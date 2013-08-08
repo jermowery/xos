@@ -301,17 +301,35 @@ class OpenStackManager:
             #del_route = 'route del -net %s' % self.cidr
             #commands.getstatusoutput(del_route)
 
+    def get_requested_networks(self, slice):
+        network_ids = [x.network_id for x in slice.networks.all()]
+
+        if slice.network_id is not None:
+            network_ids.append(slice.network_id)
+
+        networks = []
+        for network_id in network_ids:
+            networks.append({"uuid": network_id})
+
+        return networks
+
     @require_enabled
     def save_sliver(self, sliver):
         if not sliver.instance_id:
+            if (sliver.slice.name == "smbaker-slice-8") or (sliver.slice.name.startswith("smbaker-slice-net")):
+                # only inflict this pain on myself, for now...
+                requested_networks = self.get_requested_networks(sliver.slice)
+            else:
+                requested_networks = None
             slice_memberships = SliceMembership.objects.filter(slice=sliver.slice)
             pubkeys = [sm.user.public_key for sm in slice_memberships if sm.user.public_key]
-            pubkeys.append(sliver.creator.public_key) 
+            pubkeys.append(sliver.creator.public_key)
             instance = self.driver.spawn_instance(name=sliver.name,
                                    key_name = sliver.creator.keyname,
                                    image_id = sliver.image.image_id,
                                    hostname = sliver.node.name,
-                                   pubkeys = pubkeys )
+                                   pubkeys = pubkeys,
+                                   networks = requested_networks )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
 
@@ -368,7 +386,7 @@ class OpenStackManager:
         from core.models.image import Image
         # collect local images
         images = Image.objects.all()
-        images_dict = {}    
+        images_dict = {}
         for image in images:
             images_dict[image.name] = image
 
@@ -394,10 +412,18 @@ class OpenStackManager:
     @require_enabled
     def save_network(self, network):
         if not network.network_id:
-            # We don't want someone to give a network the same name as an existing
-            # slice network, so let's preface all the network names with "net-"
-            network_name = "net-" + network.name
+            # This is for 'nat-net' and 'sharednet1'. See if the network already
+            # exists and then hook ourselves up to it.
+            nets = self.driver.shell.quantum.list_networks(name=network.name)['networks']
+            if nets:
+                os_network = nets[0]
+                # 'nat-net' and 'sharednet1' are both shared. Let's ignore any
+                # non-shared networks because we don't want someone accidentally
+                # attaching themselves to some slice's private network.
+                if os.network['shared']:
+                    network.network_id = os_network['id']
 
+        if not network.network_id:
             # create network
             os_network = self.driver.create_network(network_name)
             network.network_id = os_network['id']
@@ -438,5 +464,85 @@ class OpenStackManager:
             self.driver.delete_router(network.router_id)
         if network.network_id:
             self.driver.delete_network(network.network_id)
+
+    def find_or_make_template_for_network(self, name):
+        """ Given a network name, try to guess the right template for it """
+
+        # templates for networks we may encounter
+        if name=='nat-net':
+            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat", "guaranteedbandwidth": 0}
+        elif name=='sharednet1':
+            template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none", "guaranteedbandwidth": 0}
+        else:
+            template_dict = {"name": "private", "visibility": "private", "translation": "none", "guaranteedbandwidth": 0}
+
+        # if we have an existing template return it
+        templates = NetworkTemplate.objects.filter(name=template_dict["name"])
+        if templates:
+            return templates[0]
+
+        template = NetworkTemplate(**template_dict)
+        return template
+
+    def refresh_networks(self):
+        # get a list of all networks in the model
+
+        networks = Networks.objects.all()
+        networks_by_name = {}
+        networks_by_id = {}
+        for network in networks:
+            networks_by_name[network.name] = network
+            networks_by_id[network.network_id] = network
+
+        # Get a list of all shared networks in OS
+
+        os_networks = self.driver.shell.quantum.list_networks()['networks']
+        os_networks_by_name = {}
+        os_networks_by_id = {}
+        for os_network in os_networks:
+            os_networks_by_name[os_network['name']] = os_network
+            os_networks_by_id[os_network['id']] = os_network
+
+        for (os_network_name, os_network) in os_networks_by_name.items():
+            uuid = os_network['id']
+            print "checking OS network", os_network['name']
+            if (os_network['shared']) and (uuid not in networks_by_id):
+                # Only automatically create shared networks. This is for Andy's
+                # nat-net and sharednet1.
+
+                owner_slice = Slices.objects.get(tenant_id = os_network['tenant_id'])
+                template = find_or_make_template_for_network(os_network['name'])
+
+                # Make a best-effort attempt to figure out the subnet. If we
+                # cannot determine the subnet, then leave those fields blank.
+                subnet_id = None
+                subnet = None
+                if os_network['subnets']:
+                    subnet_id = os_network['subnets'][0]
+                    os_subnets = self.driver.shell.quantum.list_subnets(id=subnet_id)['subnets']
+                    if os_subnets:
+                        subnet = subnets[0]['cidr']
+
+                if owner_slice:
+                    print "creating model object for OS network", os_network['name']
+                    #new_network = Network(name = os_network['name'],
+                    #                      template = template,
+                    #                      owner = owner_slice,
+                    #                      guaranteedBandwidth = 0,
+                    #                      network_id = uuid,
+                    #                      subnet_id = subnet_id)
+                    #new_network.save()
+
+        for (network_name, network) in networks:
+            # If the network disappeared from OS, then reset its network_id to None
+            if (network.network_id is not None) and (network.network_id not in os_networks_by_id):
+                network.network_id = None
+
+            # If no OS object exists, then saving the network will create one
+            if (network.network_id is None):
+                print "creating OS network for", network.name
+                #self.save_network(network)
+            else:
+                print "network", network_name, "has its OS object"
 
 
