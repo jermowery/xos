@@ -412,18 +412,6 @@ class OpenStackManager:
     @require_enabled
     def save_network(self, network):
         if not network.network_id:
-            # This is for 'nat-net' and 'sharednet1'. See if the network already
-            # exists and then hook ourselves up to it.
-            nets = self.driver.shell.quantum.list_networks(name=network.name)['networks']
-            if nets:
-                os_network = nets[0]
-                # 'nat-net' and 'sharednet1' are both shared. Let's ignore any
-                # non-shared networks because we don't want someone accidentally
-                # attaching themselves to some slice's private network.
-                if os.network['shared']:
-                    network.network_id = os_network['id']
-
-        if not network.network_id:
             # create network
             os_network = self.driver.create_network(network_name)
             network.network_id = os_network['id']
@@ -503,8 +491,7 @@ class OpenStackManager:
             os_networks_by_name[os_network['name']] = os_network
             os_networks_by_id[os_network['id']] = os_network
 
-        for (os_network_name, os_network) in os_networks_by_name.items():
-            uuid = os_network['id']
+        for (uuid, os_network) in os_networks_by_id.items():
             print "checking OS network", os_network['name']
             if (os_network['shared']) and (uuid not in networks_by_id):
                 # Only automatically create shared networks. This is for Andy's
