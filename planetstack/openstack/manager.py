@@ -455,12 +455,22 @@ class OpenStackManager:
         if network.network_id:
             self.driver.delete_network(network.network_id)
 
+    def save_network_template(self, template):
+        if (template.sharedNetworkName) and (not template.sharedNetworkId):
+            os_networks = self.driver.shell.quantum.list_networks(name=template.sharedNetworkName)['networks']
+            if os_networks:
+                template.sharedNetworkId = os_networks[0]["id"]
+
+        template.save()
+        template.enacted = datetime.now()
+        template.save(update_fields=['enacted'])
+
     def find_or_make_template_for_network(self, name):
         """ Given a network name, try to guess the right template for it """
 
         # templates for networks we may encounter
         if name=='nat-net':
-            template_dict = {"name": "private-nat", "visibility": "private", "translation": "nat"}
+            template_dict = None # {"name": "private-nat", "visibility": "private", "translation": "nat"}
         elif name=='sharednet1':
             template_dict = {"name": "dedicated-public", "visibility": "public", "translation": "none"}
         else:
@@ -471,9 +481,18 @@ class OpenStackManager:
         if templates:
             return templates[0]
 
+        if template_dict == None:
+            return None
+
         template = NetworkTemplate(**template_dict)
         template.save()
         return template
+
+    def refresh_network_templates(self):
+        for template in NetworkTemplate.objects.all():
+            if (template.sharedNetworkName) and (not template.sharedNetworkId):
+                 # this will cause us to try to fill in the sharedNetworkId
+                 self.save_network_template(template)
 
     def refresh_networks(self):
         # get a list of all networks in the model
@@ -502,6 +521,11 @@ class OpenStackManager:
 
                 owner_slice = Slice.objects.get(tenant_id = os_network['tenant_id'])
                 template = self.find_or_make_template_for_network(os_network['name'])
+
+                if (template is None):
+                    # This is our way of saying we don't want to auto-instantiate
+                    # this network type.
+                    continue
 
                 # Make a best-effort attempt to figure out the subnet. If we
                 # cannot determine the subnet, then leave those fields blank.
