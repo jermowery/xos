@@ -7,15 +7,19 @@ from django.contrib.contenttypes import generic
 
 # If true, then IP addresses will be allocated by the model. If false, then
 # we will assume the observer handles it.
-NO_OBSERVER=True
+NO_OBSERVER=False
 
 class NetworkTemplate(PlCoreBase):
     VISIBILITY_CHOICES = (('public', 'public'), ('private', 'private'))
+    TRANSLATION_CHOICES = (('none', 'none'), ('NAT', 'NAT'))
 
     name = models.CharField(max_length=32)
     description = models.CharField(max_length=1024, blank=True, null=True)
     guaranteedBandwidth = models.IntegerField(default=0)
     visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default="private")
+    translation = models.CharField(max_length=30, choices=TRANSLATION_CHOICES, default="none")
+    sharedNetworkName = models.CharField(max_length=30, blank=True, null=True)
+    sharedNetworkId = models.CharField(null=True, blank=True, max_length=256, help_text="Quantum network")
 
     def __unicode__(self):  return u'%s' % (self.name)
 
