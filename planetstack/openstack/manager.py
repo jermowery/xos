@@ -412,34 +412,38 @@ class OpenStackManager:
     @require_enabled
     def save_network(self, network):
         if not network.network_id:
-            network_name = network.name
+            if network.template.sharedNetworkName:
+                network.network_id = network.template.sharedNetworkId
+                (network.subnet_id, network.subnet) = self.driver.get_network_subnet(network.network_id)
+            else:
+                network_name = network.name
 
-            # create network
-            os_network = self.driver.create_network(network_name)
-            network.network_id = os_network['id']
+                # create network
+                os_network = self.driver.create_network(network_name)
+                network.network_id = os_network['id']
 
-            # create router
-            router = self.driver.create_router(network_name)
-            network.router_id = router['id']
+                # create router
+                router = self.driver.create_router(network_name)
+                network.router_id = router['id']
 
-            # create subnet
-            next_subnet = self.get_next_subnet()
-            cidr = str(next_subnet.cidr)
-            ip_version = next_subnet.version
-            start = str(next_subnet[2])
-            end = str(next_subnet[-2])
-            subnet = self.driver.create_subnet(name=network_name,
-                                               network_id = network.network_id,
-                                               cidr_ip = cidr,
-                                               ip_version = ip_version,
-                                               start = start,
-                                               end = end)
-            network.subnet = cidr
-            network.subnet_id = subnet['id']
-            # add subnet as interface to slice's router
-            self.driver.add_router_interface(router['id'], subnet['id'])
-            # add external route
-            self.driver.add_external_route(subnet)
+                # create subnet
+                next_subnet = self.get_next_subnet()
+                cidr = str(next_subnet.cidr)
+                ip_version = next_subnet.version
+                start = str(next_subnet[2])
+                end = str(next_subnet[-2])
+                subnet = self.driver.create_subnet(name=network_name,
+                                                   network_id = network.network_id,
+                                                   cidr_ip = cidr,
+                                                   ip_version = ip_version,
+                                                   start = start,
+                                                   end = end)
+                network.subnet = cidr
+                network.subnet_id = subnet['id']
+                # add subnet as interface to slice's router
+                self.driver.add_router_interface(router['id'], subnet['id'])
+                # add external route
+                self.driver.add_external_route(subnet)
 
         network.save()
         network.enacted = datetime.now()
@@ -527,15 +531,7 @@ class OpenStackManager:
                     # this network type.
                     continue
 
-                # Make a best-effort attempt to figure out the subnet. If we
-                # cannot determine the subnet, then leave those fields blank.
-                subnet_id = None
-                subnet = None
-                if os_network['subnets']:
-                    subnet_id = os_network['subnets'][0]
-                    os_subnets = self.driver.shell.quantum.list_subnets(id=subnet_id)['subnets']
-                    if os_subnets:
-                        subnet = os_subnets[0]['cidr']
+                (subnet_id, subnet) = self.driver.get_network_subnet(os_network['id'])
 
                 if owner_slice:
                     #print "creating model object for OS network", os_network['name']
