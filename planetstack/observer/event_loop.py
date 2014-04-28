@@ -249,7 +249,9 @@ class PlanetStackObserver:
 					except StepNotReady:
 						logging.info('Step not ready: %s'%sync_step.__name__)
 						failed_steps.append(sync_step)
-					except:
+					except Exception,e:
+						logging.error('%r',e)
+						logger.log_exc("sync step failed: %r!"%sync_step)
 						failed_steps.append(sync_step)
 
 					if (should_run):
@@ -268,9 +270,12 @@ class PlanetStackObserver:
 							if failed_objects:
 								failed_step_objects.update(failed_objects)
 							self.update_run_time(sync_step)
-						except:
+						except Exception,e:
+							logging.error('Model step failed. This seems like a misconfiguration or bug: %r',e)
+							logger.log_exc(e)
 							failed_steps.append(S)
 				self.save_run_times()
-			except:
+			except Exception, e:
+				logging.error('Core error. This seems like a misconfiguration or bug: %r',e)
 				logger.log_exc("Exception in observer run loop")
 				traceback.print_exc()
