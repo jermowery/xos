@@ -496,7 +496,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$v5qKhIyhSQ2N$V8vh2mkqYdjQib6d2jBkpwV57eMBfhd/9eiXqaDLUWg=", 
         "email": "padmin@vicci.org", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -521,7 +522,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "tony@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -546,7 +548,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "mike@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -571,7 +574,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "andy@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -596,7 +600,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "sapan@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -621,7 +626,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "jcnelson@cs.princeton.edu", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -646,7 +652,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "llp@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -671,7 +678,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "scott@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -696,7 +704,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "ali@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -721,7 +730,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "bill@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -746,7 +756,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "guru@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -771,7 +782,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "marc@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -796,7 +808,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$dLKRXWJlkuvm$Ycamy79oT1lN0Q5R3B3nvlr70n2X50mL86yraDwzuWk=", 
         "email": "siobhan@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -821,7 +834,8 @@
         "is_admin": true, 
         "password": "pbkdf2_sha256$10000$jaLSTW2ksHEN$HDpjDKieFDjMvtV5wbF/ow3zfq8EqcFtNXLfuo+150s=", 
         "email": "demo@onlab.us", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
@@ -846,7 +860,8 @@
         "is_admin": true, 
         "password": "!", 
         "email": "jhh@cs.arizona.edu", 
-        "enacted": null
+        "enacted": null,
+        "backend_status":"ok"
     }
 },
 {
