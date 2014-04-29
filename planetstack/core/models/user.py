@@ -10,6 +10,9 @@ from timezones.fields import TimeZoneField
 
 # Create your models here.
 class UserManager(BaseUserManager):
+    def get_query_set(self):
+        return super(UserManager, self).get_query_set().filter(deleted=False)
+
     def create_user(self, email, firstname, lastname, password=None):
         """
         Creates and saves a User with the given email, date of
