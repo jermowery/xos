@@ -26,11 +26,11 @@ debug_mode = False
 logger = Logger(level=logging.INFO)
 
 class StepNotReady(Exception):
-	pass
+    pass
 
 class NoOpDriver:
-	def __init__(self):
-		 self.enabled = True
+    def __init__(self):
+         self.enabled = True
 
 class PlanetStackObserver:
 	#sync_steps = [SyncNetworks,SyncNetworkSlivers,SyncSites,SyncSitePrivileges,SyncSlices,SyncSliceMemberships,SyncSlivers,SyncSliverIps,SyncExternalRoutes,SyncUsers,SyncRoles,SyncNodes,SyncImages,GarbageCollector]
