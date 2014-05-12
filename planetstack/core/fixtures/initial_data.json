@@ -66,7 +66,6 @@
         "updated": "2013-12-17T18:00:47.910Z", 
         "name": "Stanford", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.stanford.edu/", 
@@ -74,9 +73,6 @@
         "location": "37.4294,-122.17200000000003", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            5
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -89,7 +85,6 @@
         "updated": "2013-12-17T18:00:38.431Z", 
         "name": "Washington", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "https://www.washington.edu/", 
@@ -97,9 +92,6 @@
         "location": "47.6531,-122.31299999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            6
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -112,7 +104,6 @@
         "updated": "2013-12-17T18:00:28.495Z", 
         "name": "Princeton", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://princeton.edu/", 
@@ -120,9 +111,6 @@
         "location": "40.3502,-74.6524", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            7
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -135,7 +123,6 @@
         "updated": "2013-12-17T18:00:18.964Z", 
         "name": "GeorgiaTech", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.gatech.edu/", 
@@ -143,9 +130,6 @@
         "location": "33.7772,-84.39760000000001", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            8
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -158,7 +142,6 @@
         "updated": "2013-12-17T18:00:07.704Z", 
         "name": "MaxPlanck", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.mpi-sws.mpg.de/", 
@@ -166,9 +149,6 @@
         "location": "49.14,6.588999999999942", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            9
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -181,7 +161,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Atlanta", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -189,9 +168,6 @@
         "location": "33.0075,-84.0038", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -204,7 +180,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Chicago", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -212,9 +187,6 @@
         "location": "41.0085,-87.0065", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -227,7 +199,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Houston", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -235,9 +206,6 @@
         "location": "29.0077,-95.0037", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -250,7 +218,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Kansas City", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -258,9 +225,6 @@
         "location": "39.0012,-94.0063", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -273,7 +237,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Los Angeles", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -281,9 +244,6 @@
         "location": "33.2505,-117.503", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -296,7 +256,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 New York", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -304,9 +263,6 @@
         "location": "40.72,-73.99", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -319,7 +275,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Salt Lake City", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -327,9 +282,6 @@
         "location": "40.7659,-111.844", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -342,7 +294,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Seattle", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -350,9 +301,6 @@
         "location": "47.6531,-122.313", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -365,7 +313,6 @@
         "updated": "2013-06-21T21:17:13.982Z", 
         "name": "I2 Washington DC", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu", 
@@ -373,9 +320,6 @@
         "location": "38.009,-77.0003", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -388,7 +332,6 @@
         "updated": "2013-12-17T17:30:14.491Z", 
         "name": "ON.Lab", 
         "created": "2013-04-03T23:14:11.072Z", 
-        "tenant_id": "", 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.onlab.us/", 
@@ -396,14 +339,6 @@
         "location": "37.452955,-122.18176599999998", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            5, 
-            6, 
-            7, 
-            8, 
-            9, 
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -416,7 +351,6 @@
         "updated": "2013-12-17T18:21:43.870Z", 
         "name": "I2 Singapore", 
         "created": "2013-12-17T17:08:49.669Z", 
-        "tenant_id": null, 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.internet2.edu/", 
@@ -424,9 +358,6 @@
         "location": "1.33544,103.88999999999999", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [
-            10
-        ], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -439,7 +370,6 @@
         "updated": "2013-12-17T18:08:01.373Z", 
         "name": "Arizona", 
         "created": "2013-12-17T18:07:14.190Z", 
-        "tenant_id": null, 
         "enabled": true, 
         "longitude": null, 
         "site_url": "http://www.cs.arizona.edu/", 
@@ -447,7 +377,6 @@
         "location": "32.2333,-110.94799999999998", 
         "latitude": null, 
         "is_public": true, 
-        "deployments": [], 
         "abbreviated_name": "", 
         "enacted": null,
         "backend_status":"ok"
@@ -565,6 +494,258 @@
 },
 {
     "pk": 1, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.453Z", 
+        "created": "2014-05-07T23:52:01.453Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 5, 
+        "enacted": null
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.455Z", 
+        "created": "2014-05-07T23:52:01.455Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 6, 
+        "enacted": null
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.456Z", 
+        "created": "2014-05-07T23:52:01.456Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 7, 
+        "enacted": null
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.457Z", 
+        "created": "2014-05-07T23:52:01.456Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 8, 
+        "enacted": null
+    }
+},
+{
+    "pk": 5, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.457Z", 
+        "created": "2014-05-07T23:52:01.457Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 9, 
+        "enacted": null
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-07T23:52:01.458Z", 
+        "created": "2014-05-07T23:52:01.458Z", 
+        "tenant_id": null, 
+        "site": 22, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:00:37.305Z", 
+        "created": "2014-05-08T00:00:37.305Z", 
+        "tenant_id": null, 
+        "site": 23, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 8, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:01:18.181Z", 
+        "created": "2014-05-08T00:01:18.181Z", 
+        "tenant_id": null, 
+        "site": 21, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:01:29.768Z", 
+        "created": "2014-05-08T00:01:29.768Z", 
+        "tenant_id": null, 
+        "site": 20, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 10, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:01:52.173Z", 
+        "created": "2014-05-08T00:01:52.173Z", 
+        "tenant_id": null, 
+        "site": 19, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 11, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:03.435Z", 
+        "created": "2014-05-08T00:02:03.435Z", 
+        "tenant_id": null, 
+        "site": 18, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 12, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:16.038Z", 
+        "created": "2014-05-08T00:02:16.038Z", 
+        "tenant_id": null, 
+        "site": 17, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 13, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:33.626Z", 
+        "created": "2014-05-08T00:02:33.626Z", 
+        "tenant_id": null, 
+        "site": 16, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 14, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:02:46.549Z", 
+        "created": "2014-05-08T00:02:46.549Z", 
+        "tenant_id": null, 
+        "site": 15, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 15, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:01.445Z", 
+        "created": "2014-05-08T00:03:01.445Z", 
+        "tenant_id": null, 
+        "site": 14, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 16, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:18.238Z", 
+        "created": "2014-05-08T00:03:18.238Z", 
+        "tenant_id": null, 
+        "site": 13, 
+        "deployment": 10, 
+        "enacted": null
+    }
+},
+{
+    "pk": 17, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:32.156Z", 
+        "created": "2014-05-08T00:03:32.156Z", 
+        "tenant_id": null, 
+        "site": 12, 
+        "deployment": 9, 
+        "enacted": null
+    }
+},
+{
+    "pk": 18, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:45.449Z", 
+        "created": "2014-05-08T00:03:45.448Z", 
+        "tenant_id": null, 
+        "site": 11, 
+        "deployment": 8, 
+        "enacted": null
+    }
+},
+{
+    "pk": 19, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:03:59.510Z", 
+        "created": "2014-05-08T00:03:59.510Z", 
+        "tenant_id": null, 
+        "site": 10, 
+        "deployment": 7, 
+        "enacted": null
+    }
+},
+{
+    "pk": 20, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:04:12.516Z", 
+        "created": "2014-05-08T00:04:12.516Z", 
+        "tenant_id": null, 
+        "site": 9, 
+        "deployment": 6, 
+        "enacted": null
+    }
+},
+{
+    "pk": 21, 
+    "model": "core.sitedeployments", 
+    "fields": {
+        "updated": "2014-05-08T00:04:25.576Z", 
+        "created": "2014-05-08T00:04:25.576Z", 
+        "tenant_id": null, 
+        "site": 8, 
+        "deployment": 5, 
+        "enacted": null
+    }
+},
+{
+    "pk": 1, 
     "model": "core.user", 
     "fields": {
         "username": "padmin@vicci.org", 
@@ -578,7 +759,6 @@
         "is_active": true, 
         "site": null, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2014-04-22T11:32:36.356Z", 
         "timezone": "America/New_York", 
@@ -604,7 +784,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-14T03:21:24.872Z", 
         "timezone": "America/New_York", 
@@ -630,7 +809,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-04T20:46:15.904Z", 
         "timezone": "America/New_York", 
@@ -656,7 +834,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-18T21:47:08.698Z", 
         "timezone": "America/New_York", 
@@ -682,7 +859,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-17T16:21:46.493Z", 
         "timezone": "America/New_York", 
@@ -708,7 +884,6 @@
         "is_active": true, 
         "site": 10, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -734,7 +909,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-18T21:41:10.802Z", 
         "timezone": "America/New_York", 
@@ -760,7 +934,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-19T01:32:31.049Z", 
         "timezone": "America/New_York", 
@@ -786,7 +959,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -812,7 +984,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -838,7 +1009,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -864,7 +1034,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -890,7 +1059,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": null, 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-09-22T21:48:01.047Z", 
         "timezone": "America/New_York", 
@@ -916,7 +1084,6 @@
         "is_active": true, 
         "site": 22, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-19T00:59:55.668Z", 
         "timezone": "America/New_York", 
@@ -942,7 +1109,6 @@
         "is_active": true, 
         "site": 24, 
         "phone": "", 
-        "kuser_id": null, 
         "is_staff": true, 
         "last_login": "2013-12-17T18:08:01.356Z", 
         "timezone": "America/New_York", 
@@ -1017,19 +1183,15 @@
     "pk": 4, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-18T22:24:44.850Z", 
         "name": "HyperCache", 
         "service": 3, 
         "created": "2013-04-03T23:14:11.072Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "HyperCache slice for HyperCache service.", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 22, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": 1, 
         "enacted": null,
@@ -1040,19 +1202,15 @@
     "pk": 6, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-19T00:14:36.783Z", 
         "name": "Syndicate", 
         "service": 5, 
         "created": "2013-04-03T23:14:11.072Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 22, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": 1, 
         "enacted": null,
@@ -1063,19 +1221,15 @@
     "pk": 8, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-19T00:15:11.298Z", 
         "name": "DnsRedir", 
         "service": 4, 
         "created": "2013-12-04T22:48:35.584Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "DNS Redirection slice for RequestRouter service.", 
         "serviceClass": 2, 
         "enabled": true, 
         "site": 22, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": 8, 
         "enacted": null,
@@ -1086,19 +1240,15 @@
     "pk": 9, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-18T23:32:07.617Z", 
         "name": "DnsDemux", 
         "service": 4, 
         "created": "2013-12-04T22:49:23.051Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "DNS Demultiplexing slice for RequestRouter service. ", 
         "serviceClass": 2, 
         "enabled": true, 
         "site": 22, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": 8, 
         "enacted": null,
@@ -1109,19 +1259,15 @@
     "pk": 10, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-18T22:06:00.330Z", 
         "name": "Infrastructure", 
         "service": null, 
         "created": "2013-12-09T14:13:15.392Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 22, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": null, 
         "enacted": null,
@@ -1132,19 +1278,15 @@
     "pk": 11, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-17T18:09:29.065Z", 
         "name": "Stork", 
         "service": 8, 
         "created": "2013-12-13T21:49:59.476Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "The Stork Package Management Service", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 24, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": null, 
         "enacted": null,
@@ -1155,19 +1297,15 @@
     "pk": 12, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-17T18:09:20.587Z", 
         "name": "Owl", 
         "service": 8, 
         "created": "2013-12-13T21:52:15.590Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "The Owl Data Collection service", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 24, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": null, 
         "enacted": null,
@@ -1178,19 +1316,15 @@
     "pk": 13, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-18T23:34:55.351Z", 
         "name": "Hadoop", 
         "service": null, 
         "created": "2013-12-13T21:54:20.895Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "Hadoop map-reduce service", 
         "serviceClass": 2, 
         "enabled": true, 
         "site": 22, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": null, 
         "enacted": null,
@@ -1201,19 +1335,15 @@
     "pk": 14, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-18T22:21:36.462Z", 
         "name": "test", 
         "service": null, 
         "created": "2013-12-13T21:56:57.299Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "Test slice number one.", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 10, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": null, 
         "enacted": null,
@@ -1224,19 +1354,15 @@
     "pk": 15, 
     "model": "core.slice", 
     "fields": {
-        "router_id": null, 
         "updated": "2013-12-18T22:22:04.676Z", 
         "name": "test2", 
         "service": null, 
         "created": "2013-12-13T22:00:03.049Z", 
-        "network_id": null, 
-        "tenant_id": "", 
         "description": "test slice number two.", 
         "serviceClass": 1, 
         "enabled": true, 
         "site": 10, 
         "omf_friendly": false, 
-        "subnet_id": null, 
         "slice_url": "", 
         "creator": null, 
         "enacted": null,
@@ -3224,9 +3350,13 @@
         "created": "2013-12-09T14:26:56.787Z", 
         "container_format": "bare", 
         "disk_format": "raw", 
+<<<<<<< HEAD
         "image_id": "d4bdbba2-6883-4232-863a-202fd4c56c21", 
         "enacted": null,
         "backend_status":"ok"
+=======
+        "enacted": null
+>>>>>>> 2290b059d8ddc69cc7d4dfa8418bbad65c896e61
     }
 },
 {
