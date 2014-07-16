@@ -25,6 +25,7 @@ class Sliver(PlCoreBase):
     deploymentNetwork = models.ForeignKey(Deployment, verbose_name='deployment', related_name='sliver_deploymentNetwork')
     numberCores = models.IntegerField(verbose_name="Number of Cores", help_text="Number of cores for sliver", default=0)
     tags = generic.GenericRelation(Tag)
+    userData = models.TextField(blank=True, null=True, help_text="user_data passed to instance during creation")
 
     def __unicode__(self):
         if self.instance_name:
@@ -36,13 +37,17 @@ class Sliver(PlCoreBase):
         else:
             return u'unsaved-sliver'
 
-
     def save(self, *args, **kwds):
         if not self.name:
             self.name = self.slice.name
         if not self.creator and hasattr(self, 'caller'):
             self.creator = self.caller
         self.deploymentNetwork = self.node.deployment
+
+# XXX smbaker - disabled for now, was causing fault in tenant view create slice
+#        if not self.deploymentNetwork.test_acl(slice=self.slice):
+#            raise exceptions.ValidationError("Deployment %s's ACL does not allow any of this slice %s's users" % (self.deploymentNetwork.name, self.slice.name))
+
         super(Sliver, self).save(*args, **kwds)
 
     def can_update(self, user):

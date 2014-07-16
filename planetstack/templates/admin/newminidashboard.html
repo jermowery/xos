@@ -1,9 +1,14 @@
+{% load admin_static %}
+
+{% if not DISABLE_MINIDASHBOARD %}
+
 <div id="newMiniDashboard">
     <div class="hide" id="selectedMainNav">{{ opts.verbose_name_plural|capfirst }}</div>
     <div class="hide" id="currentOriginalNode">{{ original|truncatewords:"18" }}</div>
+    <div class="hide" id="minidashStatus"></div>
     <div class="miniDashPair">
         <button type="button" name="nodeCount" id="miniDashNodeCount" class="minidashbutton">--</button>
-        <label for="nodeCount" id="miniDashNodeCountLabel">Node Count</label>
+        <label for="nodeCount" id="miniDashNodeCountLabel">Active Nodes</label>
     </div>
     <div class="miniDashPair">
         <button type="button" name="avgLoad" id="miniDashAvgLoad" class="minidashbutton">--</button>
@@ -29,6 +34,8 @@
 <div id="avgLoadGraph" ></div>
 </div>
 
+<script src="{% static 'page_analytics.js' %}"></script>
+
 <script>
 /** If the analytics have already been set -- read them in on page load **/
 if (typeof window != "undefined") {
@@ -44,7 +51,6 @@ $( "#miniDashNodeCount" ).click(function() {
     $( "#nodeCountGraph" ).html(loadingDiv);
     $( "#nodeCountDialog" ).dialog("open");
     var options = {"title": "Node Count", "vAxis": {"title": "Number of Nodes", "minValue": 0, "maxValue": 250}};
-    console.log(window.pageAnalyticsUrl);
     renderChart(true,"#nodeCountDialog", "#nodeCountGraph", window.pageAnalyticsUrl, 0, 2, google.visualization.data.sum, options);
     });
 
@@ -66,3 +72,4 @@ $( "#miniDashAvgLoad" ).click(function() {
 
 </script>
 
+{% endif %}

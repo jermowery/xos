@@ -12,15 +12,29 @@ class AdminMixin(object):
     def get_urls(self):
         """Add our dashboard view to the admin urlconf. Deleted the default index."""
         from django.conf.urls import patterns, url
-        from views import DashboardWelcomeView, DashboardAjaxView, SimulatorView, DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardUserSiteView, DashboardAnalyticsAjaxView, TenantViewData,TenantCreateSlice, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView,TenantUpdateSlice
+        from views import DashboardCustomize, DashboardDynamicView, DashboardWelcomeView, DashboardAjaxView, SimulatorView, \
+                          DashboardSummaryAjaxView, DashboardAddOrRemoveSliverView, DashboardUserSiteView, DashboardAnalyticsAjaxView, \
+                          TenantViewData,TenantCreateSlice, TenantAddOrRemoveSliverView, TenantPickSitesView, TenantDeleteSliceView, \
+                          TenantUpdateSlice, DashboardSliceInteractions
+
+        from views import view_urls
 
         urls = super(AdminMixin, self).get_urls()
         del urls[0]
-        custom_url = patterns('',
-               url(r'^$', self.admin_view(DashboardWelcomeView.as_view()),
+
+        # these ones are for the views that were written before we implemented
+        # the ability to get the url from the View class.
+        dashboard_urls = [
+               url(r'^$', self.admin_view(DashboardDynamicView.as_view()),
                     name="index"),
                url(r'^test/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="test"),
+               url(r'^sliceinteractions/(?P<name>\w+)/$', self.admin_view(DashboardSliceInteractions.as_view()),
+                    name="interactions"),
+               url(r'^dashboard/(?P<name>\w+)/$', self.admin_view(DashboardDynamicView.as_view()),
+                    name="dashboard"),
+	       url(r'^customize/$', self.admin_view(DashboardCustomize.as_view()),
+                    name="customize"),
                url(r'^hpcdashuserslices/', self.admin_view(DashboardUserSiteView.as_view()),
                     name="hpcdashuserslices"),
                url(r'^hpcdashboard/', self.admin_view(DashboardAjaxView.as_view()),        # DEPRECATED
@@ -45,9 +59,13 @@ class AdminMixin(object):
                     name="picksites"),
 	       url(r'^tenantdeleteslice/$', self.admin_view(TenantDeleteSliceView.as_view()),
                     name="tenantdeleteslice")
-        )
+        ]
 
-        return custom_url + urls
+        # these ones are for the views that have a "url" member in the class
+        for (view_url, view_classname, view_class) in view_urls:
+            dashboard_urls.append( url(view_url, self.admin_view(view_class.as_view()), name=view_classname.lower()))
+
+        return dashboard_urls + urls
 
 
 class SitePlus(AdminMixin, AdminSite):

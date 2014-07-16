@@ -4,7 +4,7 @@ from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
 from core.models.sliver import Sliver
-from core.models.slice import SlicePrivilege, SliceDeployments
+from core.models.slice import Slice, SlicePrivilege, SliceDeployments
 from core.models.network import Network, NetworkSlice, NetworkDeployments
 from util.logger import Logger, logging
 
@@ -52,12 +52,11 @@ class SyncSlivers(OpenStackSyncStep):
             # now include network template
             network_templates = [network.template.sharedNetworkName for network in networks \
                                  if network.template.sharedNetworkName]
+            #logger.info("%s %s %s %s" % (driver.shell.quantum.username, driver.shell.quantum.password, driver.shell.quantum.tenant, driver.shell.quantum.url))
             for net in driver.shell.quantum.list_networks()['networks']:
                 if net['name'] in network_templates: 
                     nics.append({'net-id': net['id']}) 
 
-            file("/tmp/scott-manager","a").write("slice: %s\nreq: %s\n" % (str(sliver.slice.name), str(nics)))
-         
             # look up image id
             deployment_driver = self.driver.admin_driver(deployment=sliver.deploymentNetwork.name)
             image_id = None
@@ -74,14 +73,15 @@ class SyncSlivers(OpenStackSyncStep):
                           sliver.slice.name
                 key_fields =  {'name': keyname,
                                'public_key': sliver.creator.public_key}
-                driver.create_keypair(**key_fields)       
- 
+                driver.create_keypair(**key_fields)
+
             instance = driver.spawn_instance(name=sliver.name,
                                 key_name = keyname,
                                 image_id = image_id,
                                 hostname = sliver.node.name,
                                 pubkeys = pubkeys,
-                                nics = nics )
+                                nics = nics,
+                                userdata = sliver.userData )
             sliver.instance_id = instance.id
             sliver.instance_name = getattr(instance, 'OS-EXT-SRV-ATTR:instance_name')
             sliver.save()    

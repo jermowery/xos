@@ -5,10 +5,9 @@ from netaddr import IPAddress, IPNetwork
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.deployment import Deployment
-from core.models.site import SiteDeployments
+from core.models.site import Deployment, SiteDeployments
 from core.models.slice import Slice, SliceDeployments
-from core.models.user import UserDeployments
+from core.models.userdeployments import UserDeployments
 from util.logger import Logger, logging
 
 logger = Logger(level=logging.INFO)
@@ -100,8 +99,7 @@ class SyncSliceDeployments(OpenStackSyncStep):
 
         if slice_deployment.tenant_id:
             # update slice/tenant quota
-            driver = self.driver.client_driver(deployment=slice_deployment.deployment.name,
-                                              tenant=slice_deployment.slice.name)
+            driver = self.driver.client_driver(deployment=slice_deployment.deployment.name, tenant=slice_deployment.slice.name)
             driver.shell.nova.quotas.update(tenant_id=slice_deployment.tenant_id, instances=int(slice_deployment.slice.max_slivers)) 
 
         slice_deployment.save()

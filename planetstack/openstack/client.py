@@ -1,6 +1,8 @@
+import urlparse
 try:
     from keystoneclient.v2_0 import client as keystone_client
     from glance import client as glance_client
+    import glanceclient
     from novaclient.v1_1 import client as nova_client
     from quantumclient.v2_0 import client as quantum_client
     from nova.db.sqlalchemy import api as nova_db_api 
@@ -13,7 +15,6 @@ except:
     has_openstack = False
 
 from planetstack.config import Config
-from deployment_auth import deployment_auth
 
 def require_enabled(callable):
     def wrapper(*args, **kwds):
@@ -41,22 +42,13 @@ def parse_novarc(filename):
 
 class Client:
     def __init__(self, username=None, password=None, tenant=None, url=None, token=None, endpoint=None, deployment=None, admin=True, *args, **kwds):
-        
-            
-        if not deployment or deployment not in deployment_auth:
-            auth = deployment_auth['default']
-        else:
-            auth = deployment_auth[deployment]
-            
+       
         self.has_openstack = has_openstack
-
-        self.url = auth['url']
+        self.url = deployment.auth_url
         if admin:
-            self.username = auth['user']
-            self.password = auth['password']
-            self.tenant = auth['tenant']
-            self.endpoint = auth['endpoint']
-            self.token = auth['token']  
+            self.username = deployment.admin_user
+            self.password = deployment.admin_password
+            self.tenant = deployment.admin_tenant
         else:
             self.username = None
             self.password = None
@@ -96,9 +88,7 @@ class KeystoneClient(Client):
             self.client = keystone_client.Client(username=self.username,
                                                  password=self.password,
                                                  tenant_name=self.tenant,
-                                                 auth_url=self.url,
-                                                 endpoint=self.endpoint,
-                                                 token=self.token
+                                                 auth_url=self.url
                                                 )
 
     @require_enabled
@@ -122,6 +112,16 @@ class GlanceClient(Client):
     @require_enabled
     def __getattr__(self, name):
         return getattr(self.client, name)
+
+class GlanceClientNew(Client):
+    def __init__(self, version, endpoint, token, *args, **kwds):
+        Client.__init__(self, *args, **kwds)
+        if has_openstack:
+            self.client = glanceclient.Client(version, endpoint=endpoint, token=token)
+
+    @require_enabled
+    def __getattr__(self, name):
+        return getattr(self.client, name)        
 
 class NovaClient(Client):
     def __init__(self, *args, **kwds):
@@ -187,11 +187,17 @@ class OpenStackClient:
     def __init__ ( self, *args, **kwds) :
         # instantiate managers
         self.keystone = KeystoneClient(*args, **kwds)
+        url_parsed = urlparse.urlparse(self.keystone.url)
+        hostname = url_parsed.netloc.split(':')[0]
+        token = self.keystone.client.tokens.authenticate(username=self.keystone.username, password=self.keystone.password, tenant_name=self.keystone.tenant)
         self.keystone_db = KeystoneDB()
         self.glance = GlanceClient(*args, **kwds)
+        
+        self.glanceclient = GlanceClientNew('1', endpoint='http://%s:9292' % hostname, token=token.id, **kwds)
         self.nova = NovaClient(*args, **kwds)
         self.nova_db = NovaDB(*args, **kwds)
         self.quantum = QuantumClient(*args, **kwds)
+    
 
     @require_enabled
     def connect(self, *args, **kwds):

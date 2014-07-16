@@ -1,4 +1,6 @@
+import datetime
 import os
+import sys
 from django.db import models
 from django.forms.models import model_to_dict
 from django.core.urlresolvers import reverse
@@ -8,12 +10,12 @@ try:
     # This is a no-op if observer_disabled is set to 1 in the config file
     from observer import *
 except:
-    print "import of observer failed! printing traceback and disabling observer:"
+    print >> sys.stderr, "import of observer failed! printing traceback and disabling observer:"
     import traceback
     traceback.print_exc()
 
     # guard against something failing
-    def notify_observer():
+    def notify_observer(*args, **kwargs):
         pass
 
 # This manager will be inherited by all subclasses because
@@ -26,6 +28,11 @@ class PlCoreBase(models.Model):
     objects = PlCoreBaseManager()
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    # default values for created and updated are only there to keep evolution
+    # from failing.
+
+    created = models.DateTimeField(auto_now_add=True, default=datetime.datetime.now())
+    updated = models.DateTimeField(auto_now=True, default=datetime.datetime.now())
     enacted = models.DateTimeField(null=True, default=None)
     backend_status = models.CharField(max_length=140,
                                       default="Provisioning in progress")

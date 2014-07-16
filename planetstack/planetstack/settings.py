@@ -1,4 +1,5 @@
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
+from django import VERSION as DJANGO_VERSION
 
 # Django settings for planetstack project.
 from config import Config
@@ -80,6 +81,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = ( "/opt/planetstack/core/static/",
+                     "/opt/planetstack/core/xoslib/static/",
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
@@ -122,7 +124,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/opt/planetstack/templates"
+    "/opt/planetstack/templates",
+    "/opt/planetstack/core/xoslib/templates",    
 )
 
 INSTALLED_APPS = (
@@ -143,14 +146,24 @@ INSTALLED_APPS = (
     'core',
     'hpc',
     'requestrouter',
+    'cassandra',
+    'kairos',
+    'nagios',
     'syndicate',
     'geoposition',
 )
 
+if DJANGO_VERSION[1]>=7:
+    # if django >= 1.7, then remove evolution and change the admin module
+    INSTALLED_APPS = list(INSTALLED_APPS)
+    INSTALLED_APPS[INSTALLED_APPS.index('django.contrib.admin')] = 'django.contrib.admin.apps.SimpleAdminConfig'
+    INSTALLED_APPS.remove('django_evolution')
+    INSTALLED_APPS = tuple(INSTALLED_APPS)
 
 # Added for django-suit form 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
+    'core.context_processors.planetstack',
 )
 
 # Django Suit configuration example
@@ -197,9 +210,13 @@ SUIT_CONFIG = {
         {'label': 'Sites', 'icon':'icon-site', 'url': '/admin/core/site/'},
         {'label': 'Slices', 'icon':'icon-slice', 'url': '/admin/core/slice/'},
         {'label': 'Users', 'icon':'icon-user', 'url': '/admin/core/user/'},
-        {'label': 'Request Routing', 'icon':'icon-cog', 'app': 'requestrouter'},
+        {'label': 'RequestRouter', 'icon':'icon-cog', 'app': 'requestrouter'},
         {'label': 'HyperCache', 'icon':'icon-cog', 'app': 'hpc'},
         {'label': 'Syndicate', 'icon':'icon-cog', 'app': 'syndicate'},
+        {'label': 'Cassandra', 'icon':'icon-cog', 'app': 'cassandra'},
+#        {'label': 'KairosDB', 'icon':'icon-cog', 'app': 'kairos'},
+#        {'label': 'Nagios', 'icon':'icon-cog', 'app': 'nagios'},
+
         #{'label': 'Configured Services', 'icon':'icon-cog', 'models': [{'label': 'Content Delivery Network', 'app':'hpc'}]},
     #     'sites',
     #     {'app': 'auth', 'icon':'icon-lock', 'models': ('user', 'group')},
@@ -242,3 +259,5 @@ LOGGING = {
 }
 
 BIGQUERY_TABLE = getattr(config, "bigquery_table", "demoevents")
+
+DISABLE_MINIDASHBOARD = getattr(config, "gui_disable_minidashboard", False)

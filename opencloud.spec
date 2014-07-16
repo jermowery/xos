@@ -1,6 +1,6 @@
 Summary: OpenCloud core services
 Name: opencloud
-Version: 1.0.8
+Version: 1.0.20
 Release: 1
 License: GPL+
 Group: Development/Tools
@@ -29,7 +29,7 @@ requires: GeoIP
 # Empty section.
 
 %pre
-pip-python install django==1.5
+#pip-python install django==1.5
 pip-python install djangorestframework
 pip-python install markdown  # Markdown support for the browseable API.
 pip-python install pyyaml    # YAML content-type support.
@@ -59,28 +59,46 @@ if [ ! -f /usr/share/GeoIP/GeoLiteCity.dat ]; then
    gzip -d /usr/share/GeoIP/GeoLiteCity*.gz
 fi
 
+if [ "$1" == 2 ] ; then
+    if [[ -e /opt/planetstack/scripts/opencloud ]]; then
+        echo "UPGRADE - saving current state"
+        /opt/planetstack/scripts/opencloud dumpdata
+    fi
+fi
+
 %install
 rm -rf %{buildroot}
 mkdir -p  %{buildroot}
 install -d %{buildroot}/opt/planetstack
 
 # in builddir
-cp -rp /opt/plstackapi/planetstack %{buildroot}/opt/.
+cp -rp ./planetstack %{buildroot}/opt/.
 
-find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g"  > %{_tmppath}/tmp-filelist
+find %{buildroot}/opt/planetstack -type f -print | sed "s@^$RPM_BUILD_ROOT@@g" > %{_tmppath}/tmp-filelist
+cp %{_tmppath}/tmp-filelist /tmp/tmp-filelist
 
 %clean
 rm -rf %{buildroot}
 
 %files -f %{_tmppath}/tmp-filelist
 %defattr(-,root,root,-)
+%config /opt/planetstack/plstackapi_config
+%config /opt/planetstack/deployment_auth.py
 
 %post
-/opt/planetstack/scripts/opencloud initdb
+if [ "$1" == 1 ] ; then
+    echo "NEW INSTALL - initializing database"
+    /opt/planetstack/scripts/opencloud initdb
+else
+    echo "UPGRADE - doing evolution"
+    /opt/planetstack/scripts/opencloud evolvedb
+fi
+# start the server
+/opt/planetstack/scripts/opencloud runserver
 
 %preun
 if [ "$1" = 0 ] ; then
-    echo "doing preuninstall"
+    echo "UNINSTALL - destroying planetstack"
     rm -rf /opt/planetstack
 fi
 

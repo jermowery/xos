@@ -48,12 +48,15 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
                 # save the original readonly fields
                 self.readonly_save = self.readonly_fields
                 self.inlines_save = self.inlines
-            self.readonly_fields=self.user_readonly_fields
-            self.inlines = self.user_readonly_inlines
+            if hasattr(self, "user_readonly_fields"):
+                self.readonly_fields=self.user_readonly_fields
+            if hasattr(self, "user_readonly_inlines"):
+                self.inlines = self.user_readonly_inlines
         else:
             if hasattr(self, "readonly_save"):
                 # restore the original readonly fields
                 self.readonly_fields = self.readonly_save
+            if hasattr(self, "inlines_save"):
                 self.inlines = self.inlines_save
 
         try:
@@ -65,12 +68,14 @@ class ReadOnlyAwareAdmin(admin.ModelAdmin):
         request.readonly = True
         return super(ReadOnlyAwareAdmin, self).change_view(request, object_id, extra_context=extra_context)
 
-
     def __user_is_readonly(self, request):
         return request.user.isReadOnlyUser()
 
-class SingletonAdmin (admin.ModelAdmin):
+class SingletonAdmin (ReadOnlyAwareAdmin):
     def has_add_permission(self, request):
+        if not super(SingletonAdmin, self).has_add_permission(request):
+            return False
+
         num_objects = self.model.objects.count()
         if num_objects >= 1:
             return False
@@ -213,18 +218,26 @@ class NetworkLookerUpper:
 
 class SliverROInline(ReadOnlyTabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     suit_classes = 'suit-tab suit-tab-slivers'
 
 class SliverInline(PlStackTabularInline):
     model = Sliver
-    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'image', 'node', 'deploymentNetwork']
+    fields = ['ip', 'instance_name', 'slice', 'numberCores', 'deploymentNetwork', 'image', 'node']
     extra = 0
     readonly_fields = ['ip', 'instance_name']
     suit_classes = 'suit-tab suit-tab-slivers'
 
     def queryset(self, request):
         return Sliver.select_by_user(request.user)
+
+    def formfield_for_foreignkey(self, db_field, request=None, **kwargs):
+        if db_field.name == 'deploymentNetwork':
+           kwargs['queryset'] = Deployment.select_by_acl(request.user)
+
+        field = super(SliverInline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+        return field
 
 # Note this is breaking in the admin.py when trying to use an inline to add a node/image 
 #    def _declared_fieldsets(self):
@@ -306,25 +319,25 @@ class NodeROInline(ReadOnlyTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['name','deployment']
+    fields = ['name','deployment','site']
 
 class NodeInline(PlStackTabularInline):
     model = Node
     extra = 0
     suit_classes = 'suit-tab suit-tab-nodes'
-    fields = ['name','deployment']
+    fields = ['name','deployment','site']
 
 class DeploymentPrivilegeROInline(ReadOnlyTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['user','role']
+    fields = ['user','role','deployment']
 
 class DeploymentPrivilegeInline(PlStackTabularInline):
     model = DeploymentPrivilege
     extra = 0
     suit_classes = 'suit-tab suit-tab-deploymentprivileges'
-    fields = ['user','role']
+    fields = ['user','role','deployment']
 
     def queryset(self, request):
         return DeploymentPrivilege.select_by_user(request.user)
@@ -357,7 +370,7 @@ class SiteDeploymentROInline(ReadOnlyTabularInline):
     model = SiteDeployments
     #model = Site.deployments.through
     extra = 0
-    suit_classes = 'suit-tab suit-tab-sitedeployments'
+    suit_classes = 'suit-tab suit-tab-deployments'
     fields = ['deployment','site']
 
 class SiteDeploymentInline(PlStackTabularInline):
@@ -417,6 +430,24 @@ class SliceNetworkInline(PlStackTabularInline):
     verbose_name = "Network Connection"
     verbose_name_plural = "Network Connections"
     suit_classes = 'suit-tab suit-tab-slicenetworks'
+    fields = ['network']
+
+class ImageDeploymentsROInline(ReadOnlyTabularInline):
+    model = ImageDeployments
+    extra = 0
+    verbose_name = "Image Deployments"
+    verbose_name_plural = "Image Deployments"
+    suit_classes = 'suit-tab suit-tab-imagedeployments'
+    fields = ['image', 'deployment', 'glance_image_id']
+
+class ImageDeploymentsInline(PlStackTabularInline):
+    model = ImageDeployments
+    extra = 0
+    verbose_name = "Image Deployments"
+    verbose_name_plural = "Image Deployments"
+    suit_classes = 'suit-tab suit-tab-imagedeployments'
+    fields = ['image', 'deployment', 'glance_image_id']
+    readonly_fields = ['glance_image_id']
 
 class PlainTextWidget(forms.HiddenInput):
     input_type = 'hidden'
@@ -455,18 +486,66 @@ class DeploymentAdminForm(forms.ModelForm):
     sites = forms.ModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,
+        help_text="Select which sites are allowed to host nodes in this deployment",
         widget=FilteredSelectMultiple(
             verbose_name=('Sites'), is_stacked=False
+        )
+    )
+    images = forms.ModelMultipleChoiceField(
+        queryset=Image.objects.all(),
+        required=False,
+        help_text="Select which images should be deployed on this deployment",
+        widget=FilteredSelectMultiple(
+            verbose_name=('Images'), is_stacked=False
         )
     )
     class Meta:
         model = Deployment
 
     def __init__(self, *args, **kwargs):
+      request = kwargs.pop('request', None)
       super(DeploymentAdminForm, self).__init__(*args, **kwargs)
 
+      self.fields['accessControl'].initial = "allow site " + request.user.site.name
+
       if self.instance and self.instance.pk:
-        self.fields['sites'].initial = self.instance.sitedeployments_set.all()
+        self.fields['sites'].initial = [x.site for x in self.instance.sitedeployments_set.all()]
+        self.fields['images'].initial = [x.image for x in self.instance.imagedeployments_set.all()]
+
+    def manipulate_m2m_objs(self, this_obj, selected_objs, all_relations, relation_class, local_attrname, foreign_attrname):
+        """ helper function for handling m2m relations from the MultipleChoiceField
+
+            this_obj: the source object we want to link from
+
+            selected_objs: a list of destination objects we want to link to
+
+            all_relations: the full set of relations involving this_obj, including ones we don't want
+
+            relation_class: the class that implements the relation from source to dest
+
+            local_attrname: field name representing this_obj in relation_class
+
+            foreign_attrname: field name representing selected_objs in relation_class
+
+            This function will remove all newobjclass relations from this_obj
+            that are not contained in selected_objs, and add any relations that
+            are in selected_objs but don't exist in the data model yet.
+        """
+
+        existing_dest_objs = []
+        for relation in list(all_relations):
+            if getattr(relation, foreign_attrname) not in selected_objs:
+                #print "deleting site", sdp.site
+                relation.delete()
+            else:
+                existing_dest_objs.append(getattr(relation, foreign_attrname))
+
+        for dest_obj in selected_objs:
+            if dest_obj not in existing_dest_objs:
+                #print "adding site", site
+                kwargs = {foreign_attrname: dest_obj, local_attrname: this_obj}
+                relation = relation_class(**kwargs)
+                relation.save()
 
     def save(self, commit=True):
       deployment = super(DeploymentAdminForm, self).save(commit=False)
@@ -475,10 +554,20 @@ class DeploymentAdminForm(forms.ModelForm):
         deployment.save()
 
       if deployment.pk:
-        deployment.sites = self.cleaned_data['sites']
+        # save_m2m() doesn't seem to work with 'through' relations. So we
+        #    create/destroy the through models ourselves. There has to be
+        #    a better way...
+
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['sites'], deployment.sitedeployments_set.all(), SiteDeployments, "deployment", "site")
+        self.manipulate_m2m_objs(deployment, self.cleaned_data['images'], deployment.imagedeployments_set.all(), ImageDeployments, "deployment", "image")
+
         self.save_m2m()
 
       return deployment
+
+class DeploymentAdminROForm(DeploymentAdminForm):
+    def save(self, commit=True):
+        raise PermissionDenied
 
 class SiteAssocInline(PlStackTabularInline):
     model = Site.deployments.through
@@ -486,16 +575,31 @@ class SiteAssocInline(PlStackTabularInline):
     suit_classes = 'suit-tab suit-tab-sites'
 
 class DeploymentAdmin(PlanetStackBaseAdmin):
-    form = DeploymentAdminForm
     model = Deployment
-    fieldList = ['name','sites']
+    fieldList = ['name','sites', 'images', 'accessControl']
     fieldsets = [(None, {'fields': fieldList, 'classes':['suit-tab suit-tab-sites']})]
-    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline]
+    inlines = [DeploymentPrivilegeInline,NodeInline,TagInline] # ,ImageDeploymentsInline]
 
-    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline]
+    user_readonly_inlines = [DeploymentPrivilegeROInline,NodeROInline,TagROInline] # ,ImageDeploymentsROInline]
     user_readonly_fields = ['name']
 
-    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags'))
+    suit_form_tabs =(('sites','Deployment Details'),('nodes','Nodes'),('deploymentprivileges','Privileges'),('tags','Tags')) # ,('imagedeployments','Images'))
+
+    def get_form(self, request, obj=None, **kwargs):
+        if request.user.isReadOnlyUser():
+            kwargs["form"] = DeploymentAdminROForm
+        else:
+            kwargs["form"] = DeploymentAdminForm
+        adminForm = super(DeploymentAdmin,self).get_form(request, obj, **kwargs)
+
+        # from stackexchange: pass the request object into the form
+
+        class AdminFormMetaClass(adminForm):
+           def __new__(cls, *args, **kwargs):
+               kwargs['request'] = request
+               return adminForm(*args, **kwargs)
+
+        return AdminFormMetaClass
 
 class ServiceAttrAsTabROInline(ReadOnlyTabularInline):
     model = ServiceAttribute
@@ -548,7 +652,6 @@ class SiteAdmin(PlanetStackBaseAdmin):
     search_fields = ['name']
 
     def queryset(self, request):
-        #print dir(UserInline)
         return Site.select_by_user(request.user)
 
     def get_formsets(self, request, obj=None):
@@ -718,16 +821,16 @@ class SlicePrivilegeAdmin(PlanetStackBaseAdmin):
 class ImageAdmin(PlanetStackBaseAdmin):
 
     fieldsets = [('Image Details', 
-                   {'fields': ['image_id', 'name', 'disk_format', 'container_format'], 
+                   {'fields': ['name', 'disk_format', 'container_format'], 
                     'classes': ['suit-tab suit-tab-general']})
                ]
 
-    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'))
+    suit_form_tabs =(('general','Image Details'),('slivers','Slivers'),('imagedeployments','Deployments'))
 
-    inlines = [SliverInline]
-    
-    user_readonly_fields = ['image_id', 'name', 'disk_format', 'container_format']
-    user_readonly_inlines = [SliverROInline]
+    inlines = [SliverInline, ImageDeploymentsInline]
+
+    user_readonly_fields = ['name', 'disk_format', 'container_format']
+    user_readonly_inlines = [SliverROInline, ImageDeploymentsROInline]
     
 class NodeForm(forms.ModelForm):
     class Meta:
@@ -810,6 +913,9 @@ class SliverAdmin(PlanetStackBaseAdmin):
             # hide MyInline in the add view
             if obj is None:
                 continue
+            if isinstance(inline, SliverInline):
+                inline.model.caller = request.user
+            yield inline.get_formset(request, obj)
 
     #def save_model(self, request, obj, form, change):
     #    # update openstack connection to use this site/tenant
@@ -871,6 +977,18 @@ class UserChangeForm(forms.ModelForm):
         # field does not have access to the initial value
         return self.initial["password"]
 
+class UserDashboardViewInline(PlStackTabularInline):
+    model = UserDashboardView
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-dashboards'
+    fields = ['user', 'dashboardView', 'order']
+
+class UserDashboardViewROInline(ReadOnlyTabularInline):
+    model = UserDashboardView
+    extra = 0
+    suit_classes = 'suit-tab suit-tab-dashboards'
+    fields = ['user', 'dashboardView', 'order']
+
 class UserAdmin(UserAdmin):
     class Meta:
         app_label = "core"
@@ -885,7 +1003,7 @@ class UserAdmin(UserAdmin):
     list_display = ('email', 'firstname', 'lastname', 'site', 'last_login')
     #list_display = ('email', 'username','firstname', 'lastname', 'is_admin', 'last_login')
     list_filter = ('site',)
-    inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline]
+    inlines = [SlicePrivilegeInline,SitePrivilegeInline,DeploymentPrivilegeInline,UserDashboardViewInline]
 
     fieldListLoginDetails = ['email','site','password','is_readonly','is_amin','public_key']
     fieldListContactInfo = ['firstname','lastname','phone','timezone']
@@ -893,6 +1011,7 @@ class UserAdmin(UserAdmin):
     fieldsets = (
         ('Login Details', {'fields': ['email', 'site','password', 'is_readonly', 'is_admin', 'public_key'], 'classes':['suit-tab suit-tab-general']}),
         ('Contact Information', {'fields': ('firstname','lastname','phone', 'timezone'), 'classes':['suit-tab suit-tab-contact']}),
+        #('Dashboard Views', {'fields': ('dashboards',), 'classes':['suit-tab suit-tab-dashboards']}),
         #('Important dates', {'fields': ('last_login',)}),
     )
     add_fieldsets = (
@@ -905,10 +1024,15 @@ class UserAdmin(UserAdmin):
     ordering = ('email',)
     filter_horizontal = ()
 
-    user_readonly_fields = fieldListLoginDetails
-    user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline]
+    user_readonly_fields = fieldListLoginDetails + fieldListContactInfo
+    user_readonly_inlines = [SlicePrivilegeROInline,SitePrivilegeROInline,DeploymentPrivilegeROInline,UserDashboardViewROInline]
 
-    suit_form_tabs =(('general','Login Details'),('contact','Contact Information'),('sliceprivileges','Slice Privileges'),('siteprivileges','Site Privileges'),('deploymentprivileges','Deployment Privileges'))
+    suit_form_tabs =(('general','Login Details'),
+                     ('contact','Contact Information'),
+                     ('sliceprivileges','Slice Privileges'),
+                     ('siteprivileges','Site Privileges'),
+                     ('deploymentprivileges','Deployment Privileges'),
+                     ('dashboards','Dashboard Views'))
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'site':
@@ -934,8 +1058,18 @@ class UserAdmin(UserAdmin):
     def change_view(self,request,object_id, extra_context=None):
 
         if self.__user_is_readonly(request):
+            if not hasattr(self, "readonly_save"):
+                # save the original readonly fields
+                self.readonly_save = self.readonly_fields
+                self.inlines_save = self.inlines
             self.readonly_fields=self.user_readonly_fields
             self.inlines = self.user_readonly_inlines
+        else:
+            if hasattr(self, "readonly_save"):
+                # restore the original readonly fields
+                self.readonly_fields = self.readonly_save
+                self.inlines = self.inlines_save
+
         try:
             return super(UserAdmin, self).change_view(request, object_id, extra_context=extra_context)
         except PermissionDenied:
@@ -953,7 +1087,13 @@ class UserAdmin(UserAdmin):
     def queryset(self, request):
         return User.select_by_user(request.user)
 
+class DashboardViewAdmin(PlanetStackBaseAdmin):
+    fieldsets = [('Dashboard View Details',
+                   {'fields': ['name', 'url'],
+                    'classes': ['suit-tab suit-tab-general']})
+               ]
 
+    suit_form_tabs =(('general','Dashboard View Details'),)
 
 class ServiceResourceROInline(ReadOnlyTabularInline):
     model = ServiceResource
@@ -1375,4 +1515,5 @@ if True:
     #admin.site.register(SitePrivilege, SitePrivilegeAdmin)
     admin.site.register(Sliver, SliverAdmin)
     admin.site.register(Image, ImageAdmin)
+    admin.site.register(DashboardView, DashboardViewAdmin)
 
