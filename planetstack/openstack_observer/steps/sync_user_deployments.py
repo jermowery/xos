@@ -46,9 +46,11 @@ class SyncUserDeployments(OpenStackSyncStep):
             if site_deployments:
                 # need the correct tenant id for site at the deployment
                 tenant_id = site_deployments[0].tenant_id  
-		roles.add('user')
+		tenant_name =site_deployments[0].site.login_base
+
+		roles.append('user')
                 if user_deployment.user.is_admin:
-                    roles.add('admin')
+                    roles.append('admin')
 
 
         user_fields = {'endpoint':user_deployment.deployment.auth_url,
@@ -57,8 +59,9 @@ class SyncUserDeployments(OpenStackSyncStep):
                        'password': hashlib.md5(user_deployment.user.password).hexdigest()[:6],
                        'admin_user': user_deployment.deployment.admin_user,
 		       'admin_password': user_deployment.deployment.admin_password,
+		       'admin_tenant': 'admin',
 		       'roles':roles,
-		       'tenant':tenant_id}    
+		       'tenant':tenant_name}    
 	
 	rendered = template.render(user_fields)
 	res = run_template('sync_user_deployments.yaml', user_fields)
