@@ -19,11 +19,18 @@ def parse_output(msg):
 
     for l in lines:
 	magic_str = 'ok: [127.0.0.1] => '
+	magic_str2 = 'changed: [127.0.0.1] => '
         if (l.startswith(magic_str)):
 	    w = len(magic_str)
 	    str = l[w:]
 	    d = json.loads(str)
 	    results.append(d)
+	elif (l.startswith(magic_str2)):
+	    w = len(magic_str2)
+	    str = l[w:]
+	    d = json.loads(magic_str2)
+	    results.append(d)
+
 
     return results
 	    
