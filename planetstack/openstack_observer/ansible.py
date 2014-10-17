@@ -28,7 +28,7 @@ def parse_output(msg):
 	elif (l.startswith(magic_str2)):
 	    w = len(magic_str2)
 	    str = l[w:]
-	    d = json.loads(magic_str2)
+	    d = json.loads(str)
 	    results.append(d)
 
 
@@ -46,7 +46,11 @@ def run_template(name, opts):
     msg = run.read()
     status = run.close()
 
-    ok_results = parse_output(msg)
+    try:
+    	ok_results = parse_output(msg)
+    except ValueError,e:
+	print str(e)
+	raise e
     return ok_results
 
 def main():
