@@ -22,12 +22,15 @@
        key_name: {{ key_name }}
        wait_for: 200
        flavor_id: {{ flavor_id }}
-       user_data: {{ user_data }}
+       user_data: "{{ user_data }}"
        nics:
-       {% for net in nets %}  
+       {% for net in nics %}  
          - net-id: {{ net }}
        {% endfor %}
+
+       {% if meta %}
        meta:
-       {% for k,v in meta %}  
-         - {{ k }} : {{ v }}
+       {% for k,v in meta.items() %}  
+         {{ k }} : "{{ v }}"
        {% endfor %}
+       {% endif %}
