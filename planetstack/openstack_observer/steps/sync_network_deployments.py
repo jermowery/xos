@@ -58,8 +58,6 @@ class SyncNetworkDeployments(OpenStackSyncStep):
             network_name = network_deployment.network.name
 
             # create network
-	    import pdb
-	    pdb.set_trace()
             os_network = self.driver.create_network(network_name, shared=True)
             network_deployment.net_id = os_network['id']
 
