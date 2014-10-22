@@ -27,9 +27,9 @@ class SyncSiteDeployments(OpenStackSyncStep):
 		site_deployment.tenant_id = res[0]['id']
         	site_deployment.save()
 	elif (len(res)):
-		raise Exception('Could not assign roles for user %s'%tenant_fields['name'])
+		raise Exception('Could not assign roles for user %s'%tenant_fields['tenant'])
 	else:
-		raise Exception('Could not create or update user %s'%tenant_fields['name'])
+		raise Exception('Could not create or update user %s'%tenant_fields['tenant'])
             
     def delete_record(self, site_deployment):
         if site_deployment.tenant_id:
