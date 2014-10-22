@@ -51,7 +51,7 @@ class SyncSlivers(OpenStackSyncStep):
 	for network_deployment in network_deployments:
 	    if network_deployment.network.template.visibility == 'private' and \
 	       network_deployment.network.template.translation == 'none' and network_deployment.net_id: 
-		nics.append({'net-id': network_deployment.net_id})
+		nics.append(network_deployment.net_id)
 
 	# now include network template
 	network_templates = [network.template.sharedNetworkName for network in networks \
@@ -62,7 +62,7 @@ class SyncSlivers(OpenStackSyncStep):
 	nets = driver.shell.quantum.list_networks()['networks']
 	for net in nets:
 	    if net['name'] in network_templates: 
-		nics.append({'net-id': net['id']}) 
+		nics.append(net['id']) 
 
 	if (not nics):
 	    for net in nets:
