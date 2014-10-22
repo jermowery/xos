@@ -26,8 +26,6 @@ class SyncUserDeployments(OpenStackSyncStep):
             return UserDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
     def sync_record(self, user_deployment):
-	import pdb
-	pdb.set_trace()
         logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
 
         if not user_deployment.deployment.admin_user:
@@ -46,11 +44,15 @@ class SyncUserDeployments(OpenStackSyncStep):
             if site_deployments:
                 # need the correct tenant id for site at the deployment
                 tenant_id = site_deployments[0].tenant_id  
-		tenant_name =site_deployments[0].site.login_base
+		tenant_name = site_deployments[0].site.login_base
 
 		roles.append('user')
                 if user_deployment.user.is_admin:
                     roles.append('admin')
+	    else:
+		raise Exception('Internal error. Missing SiteDeployment for user %s'%user_deployment.user.email)
+	else:
+	    raise Exception('Siteless user %s'%user_deployment.user.email)
 
 
         user_fields = {'endpoint':user_deployment.deployment.auth_url,
