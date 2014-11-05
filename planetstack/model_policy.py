@@ -6,10 +6,14 @@ from dependency_walker import *
 import model_policies
 
 def update_dep(d, o):
-	print "Updating %s (%s)"%(d,d.__class__.__name__)
 	if (d.updated < o.updated):
 		d.save(update_fields=['updated'])
 	
+def delete_if_inactive(d, o):
+	#print "Deleting %s (%s)"%(d,d.__class__.__name__)
+	d.delete()	
+	return
+
 @receiver(post_save)
 def post_save_handler(sender, instance, **kwargs):
 	sender_name = sender.__name__
@@ -27,4 +31,6 @@ def post_save_handler(sender, instance, **kwargs):
 			
 		except:
 			pass
+	elif 'deleted' in kwargs['update_fields']:
+		walk_inv_deps(delete_if_inactive, instance)
 	
