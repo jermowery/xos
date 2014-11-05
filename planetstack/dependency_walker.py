@@ -37,6 +37,13 @@ def plural(name):
 		return name+'s'
 
 
+def walk_deps(fn, object):
+	model = object.__class__.__name__
+	try:	
+		deps = dependencies[model]
+	except:
+		deps = []
+	__walk_deps(fn, object, deps)
 
 def walk_inv_deps(fn, object):
 	model = object.__class__.__name__
@@ -44,6 +51,10 @@ def walk_inv_deps(fn, object):
 		deps = inv_dependencies[model]
 	except:
 		deps = []
+	__walk_deps(fn, object, deps)
+
+def __walk_deps(fn, object, deps):
+	model = object.__class__.__name__
 
 	for dep in deps:
 		#print "Checking dep %s"%dep
