@@ -45,7 +45,7 @@ class SliverDeletionManager(PlCoreBaseDeletionManager):
 
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
         if (backend_type):
-            return parent_queryset.filter(Q(node__deployment__backend_type=backend_type))
+            return parent_queryset.filter(Q(node__controller__backend_type=backend_type))
         else:
             return parent_queryset
 
@@ -66,7 +66,7 @@ class SliverManager(PlCoreBaseManager):
         parent_queryset = parent.get_queryset() if hasattr(parent, "get_queryset") else parent.get_query_set()
 
         if backend_type:
-            return parent_queryset.filter(Q(node__deployment__backend_type=backend_type))
+            return parent_queryset.filter(Q(node__controller__backend_type=backend_type))
         else:
             return parent_queryset
 
