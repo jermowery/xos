@@ -5,7 +5,7 @@ from .service import Service
 from .service import ServiceAttribute
 from .tag import Tag
 from .role import Role
-from .site import Site,Deployment, DeploymentRole, DeploymentPrivilege, SiteDeployments, ControllerSites
+from .site import Site,Deployment, ControllerRole, DeploymentPrivilege, SiteDeployments, ControllerSites
 from .dashboard import DashboardView
 from .user import User, UserDashboardView
 from .serviceclass import ServiceClass
