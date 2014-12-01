@@ -5,68 +5,68 @@ from collections import defaultdict
 from django.db.models import F, Q
 from planetstack.config import Config
 from observer.openstacksyncstep import OpenStackSyncStep
-from core.models.site import SiteDeployments, Deployment
+from core.models.site import ControllerSites, Controller
 from core.models.user import User
-from core.models.userdeployments import UserDeployments
+from core.models.usercontrollers import ControllerUsers
 from util.logger import Logger, logging
 
 from observer.ansible import *
 
 logger = Logger(level=logging.INFO)
 
-class SyncUserDeployments(OpenStackSyncStep):
-    provides=[UserDeployments, User]
+class SyncControllerUsers(OpenStackSyncStep):
+    provides=[ControllerUsers, User]
     requested_interval=0
 
     def fetch_pending(self, deleted):
 
         if (deleted):
-            return UserDeployments.deleted_objects.all()
+            return ControllerUsers.deleted_objects.all()
         else:
-            return UserDeployments.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
+            return ControllerUsers.objects.filter(Q(enacted__lt=F('updated')) | Q(enacted=None)) 
 
-    def sync_record(self, user_deployment):
-        logger.info("sync'ing user %s at deployment %s" % (user_deployment.user, user_deployment.deployment.name))
+    def sync_record(self, controller_user):
+        logger.info("sync'ing user %s at controller %s" % (controller_user.user, controller_user.controller))
 
-        if not user_deployment.deployment.admin_user:
-            logger.info("deployment %r has no admin_user, skipping" % user_deployment.deployment)
+        if not controller_user.controller.admin_user:
+            logger.info("controller %r has no admin_user, skipping" % controller_user.controller)
             return
 
-	template = os_template_env.get_template('sync_user_deployments.yaml')
+	template = os_template_env.get_template('sync_controller_users.yaml')
 	
-        name = user_deployment.user.email[:user_deployment.user.email.find('@')]
+        name = controller_user.user.email[:controller_user.user.email.find('@')]
 
 	roles = []
-	# setup user deployment home site roles  
-        if user_deployment.user.site:
-            site_deployments = SiteDeployments.objects.filter(site=user_deployment.user.site,
-                                                              deployment=user_deployment.deployment)
-            if site_deployments:
-                # need the correct tenant id for site at the deployment
-                tenant_id = site_deployments[0].tenant_id  
-		tenant_name = site_deployments[0].site.login_base
+	# setup user controller home site roles  
+        if controller_user.user.site:
+            site_controllers = ControllerSites.objects.filter(site=controller_user.user.site,
+                                                              controller=controller_user.controller)
+            if site_controllers:
+                # need the correct tenant id for site at the controller
+                tenant_id = site_controllers[0].tenant_id  
+		tenant_name = site_controllers[0].site.login_base
 
 		roles.append('user')
-                if user_deployment.user.is_admin:
+                if controller_user.user.is_admin:
                     roles.append('admin')
 	    else:
-		raise Exception('Internal error. Missing SiteDeployments for user %s'%user_deployment.user.email)
+		raise Exception('Internal error. Missing ControllerSites for user %s'%controller_user.user.email)
 	else:
-	    raise Exception('Siteless user %s'%user_deployment.user.email)
+	    raise Exception('Siteless user %s'%controller_user.user.email)
 
 
-        user_fields = {'endpoint':user_deployment.deployment.auth_url,
-		       'name': user_deployment.user.email,
-                       'email': user_deployment.user.email,
-                       'password': hashlib.md5(user_deployment.user.password).hexdigest()[:6],
-                       'admin_user': user_deployment.deployment.admin_user,
-		       'admin_password': user_deployment.deployment.admin_password,
+        user_fields = {'endpoint':controller_user.controller.auth_url,
+		       'name': controller_user.user.email,
+                       'email': controller_user.user.email,
+                       'password': hashlib.md5(controller_user.user.password).hexdigest()[:6],
+                       'admin_user': controller_user.controller.admin_user,
+		       'admin_password': controller_user.controller.admin_password,
 		       'admin_tenant': 'admin',
 		       'roles':roles,
 		       'tenant':tenant_name}    
 	
 	rendered = template.render(user_fields)
-	res = run_template('sync_user_deployments.yaml', user_fields)
+	res = run_template('sync_controller_users.yaml', user_fields)
 
 	# results is an array in which each element corresponds to an 
 	# "ok" string received per operation. If we get as many oks as
@@ -74,13 +74,13 @@ class SyncUserDeployments(OpenStackSyncStep):
 	# Otherwise, the number of oks tell us which operation failed.
 	expected_length = len(roles) + 1
 	if (len(res)==expected_length):
-        	user_deployment.save()
+        	controller_user.save()
 	elif (len(res)):
 		raise Exception('Could not assign roles for user %s'%user_fields['name'])
 	else:
 		raise Exception('Could not create or update user %s'%user_fields['name'])
 
-    def delete_record(self, user_deployment):
-        if user_deployment.kuser_id:
-            driver = self.driver.admin_driver(deployment=user_deployment.deployment.name)
-            driver.delete_user(user_deployment.kuser_id)
+    def delete_record(self, controller_user):
+        if controller_user.kuser_id:
+            driver = self.driver.admin_driver(controller=controller_user.controller)
+            driver.delete_user(controller_user.kuser_id)
