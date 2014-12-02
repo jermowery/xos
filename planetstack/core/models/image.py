@@ -13,6 +13,14 @@ class Image(PlCoreBase):
 
     def __unicode__(self):  return u'%s' % (self.name)
 
+class ImageDeployments(PlCoreBase):
+    objects = DeploymentLinkManager()
+    deleted_objects = DeploymentLinkDeletionManager()
+    image = models.ForeignKey(Image,related_name='imagedeployments')
+    deployment = models.ForeignKey(Deployment,related_name='imagedeployments')
+
+    def __unicode__(self):  return u'%s %s' % (self.image, self.deployment)
+
 class ControllerImages(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
