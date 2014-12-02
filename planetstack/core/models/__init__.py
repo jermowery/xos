@@ -12,7 +12,7 @@ from .serviceclass import ServiceClass
 from .site import ControllerLinkManager,ControllerLinkDeletionManager
 from .slice import Slice, ControllerSlices
 from .controllerusers import ControllerUsers
-from .image import Image, ControllerImages
+from .image import Image, ImageDeployments, ControllerImages
 from .node import Node
 from .serviceresource import ServiceResource
 from .slice import SliceRole
