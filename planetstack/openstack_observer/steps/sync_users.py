@@ -15,7 +15,7 @@ class SyncUsers(OpenStackSyncStep):
     def sync_record(self, user):
         for controller_user in ControllerUsers.objects.filter(user=user):
             # bump the 'updated' field so user account are updated across 
-            # deployments.
+            # controllers.
             controller_user.save()
 
     def delete_record(self, user):
