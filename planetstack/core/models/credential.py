@@ -41,7 +41,7 @@ class SliceCredential(PlCoreBase):
 class ControllerCredential(PlCoreBase):
     objects = ControllerLinkManager()
     deleted_objects = ControllerLinkDeletionManager()
-    deployment = models.ForeignKey(Controller, related_name='deploymentcredentials', help_text="The User this credential is associated with")
+    controller = models.ForeignKey(Controller, related_name='controllercredentials', help_text="The User this credential is associated with")
 
     name = models.SlugField(help_text="The credential type, e.g. ec2", max_length=128)
     key_id = models.CharField(help_text="The backend id of this credential", max_length=1024)
