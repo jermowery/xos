@@ -1,7 +1,7 @@
 import os
 from django.db import models
 from core.models import PlCoreBase
-from core.models import Controller,ControllerLinkManager,ControllerLinkDeletionManager
+from core.models import Deployment,Controller,ControllerLinkManager,ControllerLinkDeletionManager
 
 # Create your models here.
 
@@ -14,8 +14,6 @@ class Image(PlCoreBase):
     def __unicode__(self):  return u'%s' % (self.name)
 
 class ImageDeployments(PlCoreBase):
-    objects = DeploymentLinkManager()
-    deleted_objects = DeploymentLinkDeletionManager()
     image = models.ForeignKey(Image,related_name='imagedeployments')
     deployment = models.ForeignKey(Deployment,related_name='imagedeployments')
 
