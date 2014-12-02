@@ -9,7 +9,7 @@ from django.contrib.contenttypes import generic
 
 class Node(PlCoreBase):
     name = models.CharField(max_length=200, unique=True, help_text="Name of the Node")
-    site_deployment = models.ForeignKey(SiteDeployment, related_name='nodes')
+    site_deployment = models.ForeignKey(SiteDeployments, related_name='nodes')
     tags = generic.GenericRelation(Tag)
 
     def __unicode__(self):  return u'%s' % (self.name)
