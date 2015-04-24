@@ -73,9 +73,13 @@ Login credentials are username=padmin@vicci.org password=letmein
   * Type a name: mysite_demo
   * Click: "Create Slice"
   
+6. Add padmin@vicci.org user to new slice
+  * Click: Slices > mysite_demo > Privileges > Add another Slice Privilege
+  * User: padmin@vicci.org
+  * Role: admin
+  * Click "Save"
+  
 With luck, XOS should be configured to control OpenStack.  How to verify:
 * The padmin@vicci.org user should be in Keystone
+* The mysite_demo tenant should be in Keystone
 * The disk image should be in Glance
-
-
-
