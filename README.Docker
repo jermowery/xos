@@ -3,14 +3,78 @@ XOS using the Django development server.  It copies whatever files are
 in the local repository into the image. This branch has some customization 
 for the CORD demo being put together for ONS.
 
-Here's how to build the XOS Docker image:
+Building and running XOS
+------------------------
 
-1. A minimal initial_data.json is provided. The login credentials
-   for this initial_data.json are username=padmin@vicci.org, 
-   password=letmein.
+1. SSH to the XOS VM from the cluster head node:
+$ ssh ubuntu@xos
 
-2. $ docker build -t xos .
+2. Checkout the 'cord-demo' branch of the XOS git repository:
+$ cd xos
+$ git checkout cord-demo
 
-3. $ docker run -p 8000:8000 xos
+3. Build the Docker container for XOS:
+$ docker build -t xos .
 
-To configure XOS to control the OpenStack cluster set up for the demo:
+4. Run the container:
+$ docker run -p 8000:8000 xos
+
+
+Updating the running container with changes to XOS
+--------------------------------------------------
+
+1. Update the local tree in ~/xos
+
+2. Run the container update script:
+$ ./update-container.sh
+
+
+Configuring XOS to control OpenStack
+------------------------------------
+To login to XOS, point your browser at http://<head node>:8000
+Login credentials are username=padmin@vicci.org password=letmein
+
+1. Add the OpenStack controller credentials. Some of the values can be
+   found in /home/ubuntu/admin-openrc.sh on the head node.
+  * Click: Sites > My Site > Admin-Only > Add another Controller Site
+  * Click green plus sign under Controllers
+  * In the pop-up window:
+    - Deployment: My Deployment
+    - Name: CORD Demo
+    - Backend type: OpenStack
+    - Version: Icehouse
+    - Auth url: <from admin-openrc.sh>
+    - Admin user: admin
+    - Admin tenant: admin
+    - Admin password: <from admin-openrc.sh>
+    - Domain: RegionOne
+  * Click the "Save" button at right of pop-up window (may need to expand window to see it)
+
+2. Add the public key for admin user.  It's probably convenient to use
+   the public key in /home/ubuntu/.ssh/id_rsa.pub on the head node.
+  * Click: padmin@vicci.org (at top of page)
+  * Paste public key in the box
+  * CLick the "Save" button at right
+  
+3. Add the disk image to My Deployment
+  * Click: Deployments > My Deployment
+  * Move "trusty-server-cloudimage-amd64-disk1" to "Chosen Images"
+  * Click "Save"
+  
+4. Add a compute node to the Site
+  * Click: Sites > My Site > Nodes > Add another Node
+  * Type the node DNS name in the box
+  * Site deployment: MyDeployment MySite
+  * Click "Save"
+  
+5. Create a slice
+  * Click: Home > Create New Slice
+  * Type a name: mysite_demo
+  * Click: "Create Slice"
+  
+With luck, XOS should be configured to control OpenStack.  How to verify:
+* The padmin@vicci.org user should be in Keystone
+* The disk image should be in Glance
+
+
+
