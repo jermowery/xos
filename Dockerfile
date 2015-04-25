@@ -91,7 +91,7 @@ ADD observer.conf /etc/supervisor/conf.d/
 # Get XOS 
 ADD xos /opt/xos
 RUN mkdir -p /opt/xos/images
-ADD http://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img /opt/xos/images/
+ADD http://www.vicci.org/opencloud/trusty-server-cloudimg-amd64-disk1.img  /opt/xos/images/Ubuntu-14.04-LTS-amd64.img
 
 # Initscript is broken in Ubuntu
 #ADD observer-initscript /etc/init.d/xosobserver
