@@ -1,29 +1,29 @@
-from core.models import Site
-from core.models import *
-from openstack.manager import OpenStackManager
+import threading
+from cgi import escape as html_escape
 
-from django.contrib import admin
-from django.contrib.auth.models import Group
 from django import forms
-from django.utils.safestring import mark_safe
+from django.contrib import admin, messages
+from django.contrib.admin.widgets import (AdminTextareaWidget,
+                                          FilteredSelectMultiple)
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.admin.widgets import FilteredSelectMultiple, AdminTextareaWidget
-from django.contrib.auth.forms import ReadOnlyPasswordHashField, AdminPasswordChangeForm
+from django.contrib.auth.forms import (AdminPasswordChangeForm,
+                                       ReadOnlyPasswordHashField)
+from django.contrib.auth.models import Group
 from django.contrib.auth.signals import user_logged_in
-from django.utils import timezone
 from django.contrib.contenttypes import generic
-from suit.widgets import LinkedSelect
-from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse, resolve, NoReverseMatch
+from django.core.exceptions import PermissionDenied, ValidationError
+from django.core.urlresolvers import NoReverseMatch, resolve, reverse
+from django.forms.utils import flatatt, to_current_timezone
+from django.utils import timezone
 from django.utils.encoding import force_text, python_2_unicode_compatible
 from django.utils.html import conditional_escape, format_html
+from django.utils.safestring import mark_safe
 from django.utils.text import capfirst
-from django.forms.utils import flatatt, to_current_timezone
-from django.core.exceptions import PermissionDenied, ValidationError
-from cgi import escape as html_escape
-from django.contrib import messages
 
-import threading
+from core.models import *
+from core.models import Site
+from openstack.manager import OpenStackManager
+from suit.widgets import LinkedSelect
 
 # thread locals necessary to work around a django-suit issue
 _thread_locals = threading.local()
@@ -2152,4 +2152,3 @@ if True:
     admin.site.register(TenantRootRole, TenantRootRoleAdmin)
     admin.site.register(TenantAttribute, TenantAttributeAdmin)
 #    admin.site.register(Container, ContainerAdmin)
-
